@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Detalji društvene igre - Igraonica">
+    <title>Detalji igre | Igraonica</title>
+    <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+
+<header class="zaglavlje">
+    <nav class="navigacija">
+        <a href="index.html" class="logo">🎲 Igra<span>onica</span></a>
+        <button class="hamburger" id="hamburger" aria-label="Otvori izbornik" aria-controls="nav-skupina" aria-expanded="false">☰</button>
+        <div class="nav-skupina" id="nav-skupina">
+            <ul class="nav-veze" id="nav-veze">
+                <li><a href="index.html">Početna</a></li>
+                <li><a href="igre.html">Katalog</a></li>
+            </ul>
+            <ul class="nav-auth" id="nav-auth"></ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <a href="igre.html" class="natrag-veza">← Natrag na katalog</a>
+
+    <!-- Detalji igre - sadržaj se dinamički gradi iz API odgovora -->
+    <section id="detalji-igre">
+        <div class="ucitavanje">Učitavanje podataka o igri...</div>
+    </section>
+
+    <!-- Recenzije -->
+    <section class="sekcija" id="sekcija-recenzije" style="display: none;">
+        <h2>Recenzije igrača</h2>
+        <p class="sekcija-podnaslov">Što drugi članovi misle o ovoj igri.</p>
+
+        <div class="prosjek-ocjena" id="prosjek-ocjena"></div>
+
+        <div id="popis-recenzija"></div>
+
+        <!-- Obrazac za novu recenziju (vidljiv samo prijavljenima) -->
+        <div class="obrazac-kartica obrazac-kartica-siroka" id="kartica-recenzija" style="display: none; margin-top: 1.5rem;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">Napišite recenziju</h2>
+            <form id="forma-recenzija" novalidate>
+                <div class="polje">
+                    <label>Vaša ocjena</label>
+                    <div class="odabir-zvjezdica" id="odabir-zvjezdica">
+                        <input type="radio" name="ocjena" id="zvijezda5" value="5"><label for="zvijezda5">★</label>
+                        <input type="radio" name="ocjena" id="zvijezda4" value="4"><label for="zvijezda4">★</label>
+                        <input type="radio" name="ocjena" id="zvijezda3" value="3"><label for="zvijezda3">★</label>
+                        <input type="radio" name="ocjena" id="zvijezda2" value="2"><label for="zvijezda2">★</label>
+                        <input type="radio" name="ocjena" id="zvijezda1" value="1"><label for="zvijezda1">★</label>
+                    </div>
+                    <span class="greska-poruka" id="greska-ocjena" style="display: none;"></span>
+                </div>
+                <div class="polje">
+                    <label for="komentar">Komentar</label>
+                    <textarea id="komentar" name="komentar"
+                              placeholder="Podijelite svoje dojmove o igri (najmanje 10 znakova)..."></textarea>
+                    <span class="greska-poruka"></span>
+                </div>
+                <button type="submit" class="gumb">Objavi recenziju</button>
+            </form>
+        </div>
+
+        <p id="recenzija-prijava-napomena" style="display: none; margin-top: 1.2rem;">
+            💡 <a href="prijava.html">Prijavite se</a> kako biste posudili igru ili napisali recenziju.
+        </p>
+    </section>
+</main>
+
+<footer class="podnozje">
+    <div class="podnozje-sadrzaj">
+        <p>© <span id="godina-podnozje">2026</span> Igraonica · Projektni zadatak iz web programiranja</p>
+        <ul class="podnozje-veze">
+            <li><a href="igre.html">Katalog</a></li>
+            <li><a href="literatura.html">Literatura</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div id="toast-spremnik"></div>
+
+<script src="js/ilustracije.js"></script>
+<script src="js/glavni.js"></script>
+<script src="js/validacija.js"></script>
+<script src="js/igra.js"></script>
+</body>
+</html>

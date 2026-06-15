@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Upravljanje katalogom - Igraonica">
+    <title>Katalog (admin) | Igraonica</title>
+    <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+
+<header class="zaglavlje">
+    <nav class="navigacija">
+        <a href="index.html" class="logo">🎲 Igra<span>onica</span></a>
+        <button class="hamburger" id="hamburger" aria-label="Otvori izbornik" aria-controls="nav-skupina" aria-expanded="false">☰</button>
+        <div class="nav-skupina" id="nav-skupina">
+            <ul class="nav-veze" id="nav-veze">
+                <li><a href="index.html">Početna</a></li>
+                <li><a href="igre.html">Katalog</a></li>
+            </ul>
+            <ul class="nav-auth" id="nav-auth"></ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <nav class="admin-podnav">
+        <a href="admin.html">📊 Nadzorna ploča i posudbe</a>
+        <a href="admin-katalog.html" class="aktivna">📚 Upravljanje katalogom</a>
+    </nav>
+
+    <section class="sekcija">
+        <h2>Upravljanje katalogom</h2>
+        <p class="sekcija-podnaslov">
+            Dodavanje novih igara te uređivanje i brisanje postojećih.
+        </p>
+
+        <!-- Obrazac za dodavanje / uređivanje igre -->
+        <div class="obrazac-kartica obrazac-kartica-siroka" style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.3rem; margin-bottom: 1rem;" id="forma-naslov">Dodaj novu igru</h2>
+            <form id="forma-igra" novalidate>
+                <input type="hidden" id="igra-id">
+                <div class="obrazac-redak">
+                    <div class="polje">
+                        <label for="naziv">Naziv igre</label>
+                        <input type="text" id="naziv" name="naziv" placeholder="npr. Catan">
+                        <span class="greska-poruka"></span>
+                    </div>
+                    <div class="polje">
+                        <label for="izdavac">Izdavač</label>
+                        <input type="text" id="izdavac" name="izdavac" placeholder="npr. Kosmos">
+                        <span class="greska-poruka"></span>
+                    </div>
+                </div>
+                <div class="obrazac-redak">
+                    <div class="polje">
+                        <label for="kategorija">Kategorija</label>
+                        <input type="text" id="kategorija" name="kategorija" placeholder="npr. Strateška" list="popis-kategorija">
+                        <datalist id="popis-kategorija"></datalist>
+                        <span class="greska-poruka"></span>
+                    </div>
+                    <div class="polje">
+                        <label for="godina">Godina izdanja</label>
+                        <input type="number" id="godina" name="godina" placeholder="npr. 1995">
+                        <span class="greska-poruka"></span>
+                    </div>
+                </div>
+                <div class="obrazac-redak obrazac-redak-tri">
+                    <div class="polje">
+                        <label for="min-igraca">Najmanje igrača</label>
+                        <input type="number" id="min-igraca" name="min_igraca" value="2" min="1" max="20">
+                        <span class="greska-poruka"></span>
+                    </div>
+                    <div class="polje">
+                        <label for="max-igraca">Najviše igrača</label>
+                        <input type="number" id="max-igraca" name="max_igraca" value="4" min="1" max="20">
+                        <span class="greska-poruka"></span>
+                    </div>
+                    <div class="polje">
+                        <label for="trajanje">Trajanje (min)</label>
+                        <input type="number" id="trajanje" name="trajanje" value="30" min="1" max="1000">
+                        <span class="greska-poruka"></span>
+                    </div>
+                </div>
+                <div class="obrazac-redak">
+                    <div class="polje">
+                        <label for="tezina">Težina</label>
+                        <select id="tezina" name="tezina">
+                            <option value="lagana">lagana</option>
+                            <option value="srednja" selected>srednja</option>
+                            <option value="teška">teška</option>
+                        </select>
+                        <span class="greska-poruka"></span>
+                    </div>
+                    <div class="polje">
+                        <label for="broj-primjeraka">Broj primjeraka</label>
+                        <input type="number" id="broj-primjeraka" name="broj_primjeraka" value="1" min="1" max="100">
+                        <span class="greska-poruka"></span>
+                    </div>
+                </div>
+                <div class="polje">
+                    <label for="slika-url">URL slike (neobvezno)</label>
+                    <input type="url" id="slika-url" name="slika_url" placeholder="https://... (ako se izostavi, prikazuje se ilustracija)">
+                    <p class="napomena">Poveznica na sliku kutije igre. Ako se ostavi prazno, automatski se prikazuje tematska ilustracija prema kategoriji.</p>
+                    <span class="greska-poruka"></span>
+                </div>
+                <div class="polje">
+                    <label for="opis">Kratki opis</label>
+                    <textarea id="opis" name="opis" placeholder="Kratki opis igre na hrvatskom jeziku..."></textarea>
+                    <span class="greska-poruka"></span>
+                </div>
+                <div style="display: flex; gap: 0.7rem; flex-wrap: wrap;">
+                    <button type="submit" class="gumb" id="gumb-spremi">Dodaj igru</button>
+                    <button type="button" class="gumb gumb-sekundarni" id="gumb-odustani" style="display: none;">
+                        Odustani od uređivanja
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tablica svih igara -->
+        <h3 style="margin-bottom: 0.8rem;">Sve igre u katalogu (<span id="broj-igara">0</span>)</h3>
+        <div class="tablica-omot">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Naziv</th>
+                        <th>Kategorija</th>
+                        <th>Igrači</th>
+                        <th>Trajanje</th>
+                        <th>Težina</th>
+                        <th>Primjerci</th>
+                        <th>Dostupno</th>
+                        <th>Radnje</th>
+                    </tr>
+                </thead>
+                <tbody id="tablica-igre">
+                    <tr><td colspan="8" class="tablica-prazno">Učitavanje...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="podnozje">
+    <div class="podnozje-sadrzaj">
+        <p>© <span id="godina-podnozje">2026</span> Igraonica · Projektni zadatak iz web programiranja</p>
+        <ul class="podnozje-veze">
+            <li><a href="igre.html">Katalog</a></li>
+            <li><a href="literatura.html">Literatura</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div id="toast-spremnik"></div>
+
+<script src="js/glavni.js"></script>
+<script src="js/validacija.js"></script>
+<script src="js/admin-katalog.js"></script>
+</body>
+</html>

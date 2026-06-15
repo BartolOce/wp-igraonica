@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Katalog društvenih igara Igraonice - pretraga i filtriranje">
+    <title>Katalog igara | Igraonica</title>
+    <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+
+<header class="zaglavlje">
+    <nav class="navigacija">
+        <a href="index.html" class="logo">🎲 Igra<span>onica</span></a>
+        <button class="hamburger" id="hamburger" aria-label="Otvori izbornik" aria-controls="nav-skupina" aria-expanded="false">☰</button>
+        <div class="nav-skupina" id="nav-skupina">
+            <ul class="nav-veze" id="nav-veze">
+                <li><a href="index.html">Početna</a></li>
+                <li><a href="igre.html">Katalog</a></li>
+            </ul>
+            <ul class="nav-auth" id="nav-auth"></ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="sekcija">
+        <h2>Katalog igara</h2>
+        <p class="sekcija-podnaslov">
+            Pretražite katalog, filtrirajte po kategoriji, broju igrača i dostupnosti te sortirajte rezultate.
+            Filtriranje se odvija trenutačno, bez ponovnog učitavanja stranice.
+        </p>
+
+        <!-- Filtri - obrada podataka na klijentskoj strani -->
+        <div class="filtri">
+            <input type="text" id="filtar-pretraga" placeholder="🔍 Pretraži po nazivu ili izdavaču..."
+                   aria-label="Pretraga igara">
+            <select id="filtar-kategorija" aria-label="Filtriraj po kategoriji">
+                <option value="">Sve kategorije</option>
+            </select>
+            <select id="filtar-igraci" aria-label="Filtriraj po broju igrača">
+                <option value="">Bilo koji broj igrača</option>
+                <option value="1">1 igrač (solo)</option>
+                <option value="2">2 igrača</option>
+                <option value="3">3 igrača</option>
+                <option value="4">4 igrača</option>
+                <option value="5">5 igrača</option>
+                <option value="6">6+ igrača</option>
+            </select>
+            <select id="filtar-tezina" aria-label="Filtriraj po težini">
+                <option value="">Sve težine</option>
+                <option value="lagana">Lagana</option>
+                <option value="srednja">Srednja</option>
+                <option value="teška">Teška</option>
+            </select>
+            <select id="filtar-sortiranje" aria-label="Sortiranje">
+                <option value="naziv">Sortiraj: naziv (A-Ž)</option>
+                <option value="izdavac">Sortiraj: izdavač (A-Ž)</option>
+                <option value="godina">Sortiraj: godina (najnovije)</option>
+                <option value="trajanje">Sortiraj: trajanje (najkraće)</option>
+                <option value="ocjena">Sortiraj: ocjena (najbolje)</option>
+            </select>
+            <label class="filtar-kvacica">
+                <input type="checkbox" id="filtar-dostupne">
+                Samo dostupne
+            </label>
+        </div>
+
+        <p class="brojac-rezultata" id="brojac-rezultata"></p>
+
+        <div class="mreza-igara" id="mreza-igara">
+            <div class="ucitavanje">Učitavanje igara...</div>
+        </div>
+
+        <div class="ucitavanje" id="nema-rezultata" style="display: none;">
+            😕 Nijedna igra ne odgovara zadanim uvjetima pretrage.
+        </div>
+    </section>
+</main>
+
+<footer class="podnozje">
+    <div class="podnozje-sadrzaj">
+        <p>© <span id="godina-podnozje">2026</span> Igraonica · Projektni zadatak iz web programiranja</p>
+        <ul class="podnozje-veze">
+            <li><a href="igre.html">Katalog</a></li>
+            <li><a href="literatura.html">Literatura</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div id="toast-spremnik"></div>
+
+<script src="js/ilustracije.js"></script>
+<script src="js/glavni.js"></script>
+<script src="js/katalog.js"></script>
+</body>
+</html>

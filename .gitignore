@@ -1,0 +1,15 @@
+# Ovisnosti (instaliraju se naredbom: npm install)
+node_modules/
+
+# Dnevnici i privremene datoteke
+npm-debug.log*
+*.log
+
+# Lokalne postavke okruženja
+.env
+
+# Datoteke operacijskog sustava / uređivača
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,18 @@
+{
+  "name": "igraonica",
+  "version": "1.0.0",
+  "description": "Igraonica - web aplikacija posudionice društvenih igara (projektni zadatak)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "init-baza": "node setup/init-baza.js"
+  },
+  "author": "Lovro Bartol",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mysql2": "^3.10.1"
+  }
+}

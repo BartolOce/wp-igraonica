@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prijava korisnika - Igraonica">
+    <title>Prijava | Igraonica</title>
+    <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+
+<header class="zaglavlje">
+    <nav class="navigacija">
+        <a href="index.html" class="logo">🎲 Igra<span>onica</span></a>
+        <button class="hamburger" id="hamburger" aria-label="Otvori izbornik" aria-controls="nav-skupina" aria-expanded="false">☰</button>
+        <div class="nav-skupina" id="nav-skupina">
+            <ul class="nav-veze" id="nav-veze">
+                <li><a href="index.html">Početna</a></li>
+                <li><a href="igre.html">Katalog</a></li>
+            </ul>
+            <ul class="nav-auth" id="nav-auth"></ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="obrazac-kartica" style="margin-top: 2rem;">
+        <h1>Prijava</h1>
+        <p class="obrazac-uvod">Prijavite se svojim korisničkim računom.</p>
+
+        <div class="poruka poruka-uspjeh" id="poruka-registracija">
+            ✅ Registracija je uspješno dovršena! Prijavite se svojim podacima.
+        </div>
+        <div class="poruka poruka-greska" id="poruka-greska"></div>
+
+        <!-- novalidate: iskljucena ugradena validacija preglednika,
+             validaciju obavlja vlastiti JavaScript kod -->
+        <form id="forma-prijava" novalidate>
+            <div class="polje">
+                <label for="email">E-mail adresa</label>
+                <input type="email" id="email" name="email" placeholder="ime@domena.hr" autocomplete="email">
+                <span class="greska-poruka"></span>
+            </div>
+            <div class="polje">
+                <label for="lozinka">Lozinka</label>
+                <input type="password" id="lozinka" name="lozinka" placeholder="Vaša lozinka"
+                       autocomplete="current-password">
+                <span class="greska-poruka"></span>
+            </div>
+            <div class="obrazac-dno">
+                <button type="submit" class="gumb" id="gumb-prijava">Prijavi se</button>
+            </div>
+        </form>
+
+        <p class="obrazac-veza">
+            Nemate korisnički račun? <a href="registracija.html">Registrirajte se</a>
+        </p>
+    </div>
+</main>
+
+<footer class="podnozje">
+    <div class="podnozje-sadrzaj">
+        <p>© <span id="godina-podnozje">2026</span> Igraonica · Projektni zadatak iz web programiranja</p>
+        <ul class="podnozje-veze">
+            <li><a href="igre.html">Katalog</a></li>
+            <li><a href="literatura.html">Literatura</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div id="toast-spremnik"></div>
+
+<script src="js/glavni.js"></script>
+<script src="js/validacija.js"></script>
+<script src="js/prijava.js"></script>
+</body>
+</html>

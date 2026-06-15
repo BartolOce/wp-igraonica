@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Korisnički profil i posudbe - Igraonica">
+    <title>Moj profil | Igraonica</title>
+    <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+
+<header class="zaglavlje">
+    <nav class="navigacija">
+        <a href="index.html" class="logo">🎲 Igra<span>onica</span></a>
+        <button class="hamburger" id="hamburger" aria-label="Otvori izbornik" aria-controls="nav-skupina" aria-expanded="false">☰</button>
+        <div class="nav-skupina" id="nav-skupina">
+            <ul class="nav-veze" id="nav-veze">
+                <li><a href="index.html">Početna</a></li>
+                <li><a href="igre.html">Katalog</a></li>
+            </ul>
+            <ul class="nav-auth" id="nav-auth"></ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="sekcija">
+        <h2>Moj profil</h2>
+        <p class="sekcija-podnaslov">Vaši podaci, rezervacije, posudbe i omiljene igre.</p>
+
+        <div id="obavijesti"></div>
+
+        <div class="profil-mreza">
+            <!-- Kartica s podacima korisnika -->
+            <div class="profil-kartica" id="profil-kartica">
+                <div class="ucitavanje">Učitavanje...</div>
+            </div>
+
+            <div>
+                <!-- Aktivne rezervacije i posudbe -->
+                <h3 style="margin-bottom: 0.5rem;">Aktivne rezervacije i posudbe</h3>
+                <p class="lokacija-napomena">📍 Igre preuzimate i vraćate na: <strong>Igraonica Kockica, Ilica 42, Zagreb</strong></p>
+                <div class="tablica-omot" style="margin-bottom: 2rem;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Igra</th>
+                                <th>Status</th>
+                                <th>Rok vraćanja</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="aktivne-posudbe">
+                            <tr><td colspan="4" class="tablica-prazno">Učitavanje...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Povijest -->
+                <h3 style="margin-bottom: 0.8rem;">Povijest</h3>
+                <div class="tablica-omot">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Igra</th>
+                                <th>Status</th>
+                                <th>Rezervirano</th>
+                                <th>Završeno</th>
+                            </tr>
+                        </thead>
+                        <tbody id="povijest-posudbi">
+                            <tr><td colspan="4" class="tablica-prazno">Učitavanje...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Omiljene igre (wishlist) -->
+    <section class="sekcija">
+        <h2>Moje omiljene igre</h2>
+        <p class="sekcija-podnaslov">Igre koje ste označili srcem za kasnije.</p>
+        <div class="mreza-igara" id="omiljene-igre">
+            <div class="ucitavanje">Učitavanje...</div>
+        </div>
+    </section>
+</main>
+
+<footer class="podnozje">
+    <div class="podnozje-sadrzaj">
+        <p>© <span id="godina-podnozje">2026</span> Igraonica · Projektni zadatak iz web programiranja</p>
+        <ul class="podnozje-veze">
+            <li><a href="igre.html">Katalog</a></li>
+            <li><a href="literatura.html">Literatura</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div id="toast-spremnik"></div>
+
+<script src="js/ilustracije.js"></script>
+<script src="js/glavni.js"></script>
+<script src="js/profil.js"></script>
+</body>
+</html>

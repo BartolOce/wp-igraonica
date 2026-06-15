@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Igraonica - online katalog i posudba društvenih igara">
+    <title>Početna | Igraonica</title>
+    <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+
+<header class="zaglavlje">
+    <nav class="navigacija">
+        <a href="index.html" class="logo">🎲 Igra<span>onica</span></a>
+        <button class="hamburger" id="hamburger" aria-label="Otvori izbornik" aria-controls="nav-skupina" aria-expanded="false">☰</button>
+        <div class="nav-skupina" id="nav-skupina">
+            <ul class="nav-veze" id="nav-veze">
+                <li><a href="index.html">Početna</a></li>
+                <li><a href="igre.html">Katalog</a></li>
+            </ul>
+            <ul class="nav-auth" id="nav-auth"></ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <!-- Hero sekcija - sadržaj se prilagođava prijavljenom korisniku (pocetna.js) -->
+    <section class="hero">
+        <h1 id="hero-naslov">Dobro došli u Igraonicu</h1>
+        <p id="hero-opis">
+            Posudionica društvenih igara u kojoj na jednom mjestu pregledavate katalog,
+            rezervirate igre za druženje i dijelite svoje dojmove s drugim igračima.
+        </p>
+        <form class="hero-pretraga" id="forma-pretraga">
+            <input type="text" id="pretraga-unos" placeholder="Pretražite po nazivu ili izdavaču..."
+                   aria-label="Pretraga igara">
+            <button type="submit" class="gumb">Pretraži</button>
+        </form>
+        <div class="hero-gumbi" id="hero-gumbi">
+            <a href="igre.html" class="gumb">Pregledaj katalog</a>
+            <a href="registracija.html" class="gumb gumb-sekundarni">Postani član</a>
+        </div>
+    </section>
+
+    <!-- Istraži po kategorijama - dinamički iz baze -->
+    <section class="sekcija">
+        <h2>Istraži po kategorijama</h2>
+        <p class="sekcija-podnaslov">Odaberite vrstu igre koja vam odgovara i otvorite katalog filtriran po njoj.</p>
+        <div class="karusel" style="--vis-slike: 110px;">
+            <button class="karusel-strelica lijevo" id="kat-lijevo" type="button" aria-label="Prethodno"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 6 9 12 15 18"/></svg></button>
+            <div class="karusel-traka" id="mreza-kategorija">
+                <div class="ucitavanje">Učitavanje kategorija...</div>
+            </div>
+            <button class="karusel-strelica desno" id="kat-desno" type="button" aria-label="Sljedeće"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg></button>
+        </div>
+    </section>
+
+    <!-- Najbolje ocijenjene igre - dinamički sadržaj -->
+    <section class="sekcija">
+        <h2>Najbolje ocijenjene igre</h2>
+        <p class="sekcija-podnaslov">Naslovi koje su igrači najbolje ocijenili.</p>
+        <div class="karusel" style="--vis-slike: 178px;">
+            <button class="karusel-strelica lijevo" id="izd-lijevo" type="button" aria-label="Prethodno"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 6 9 12 15 18"/></svg></button>
+            <div class="karusel-traka" id="izdvojene-igre">
+                <div class="ucitavanje">Učitavanje igara...</div>
+            </div>
+            <button class="karusel-strelica desno" id="izd-desno" type="button" aria-label="Sljedeće"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg></button>
+        </div>
+    </section>
+
+    <!-- Opis rada aplikacije - interaktivni koraci (stepper) -->
+    <section class="sekcija">
+        <h2>Kako funkcionira posudba?</h2>
+        <p class="sekcija-podnaslov">Do svoje sljedeće igre za društvo u četiri koraka — kliknite korak za detalje.</p>
+        <div class="stepper" id="stepper">
+            <div class="stepper-tabovi" id="stepper-tabovi"></div>
+            <div class="stepper-sadrzaj" id="stepper-sadrzaj"></div>
+            <div class="stepper-navigacija">
+                <button class="gumb gumb-sekundarni gumb-mali" id="stepper-prethodni" type="button">‹ Prethodni</button>
+                <span class="stepper-brojac" id="stepper-brojac"></span>
+                <button class="gumb gumb-mali" id="stepper-sljedeci" type="button">Sljedeći ›</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lokacija igraonice (preuzimanje i vraćanje) -->
+    <section class="sekcija">
+        <h2>Posjetite igraonicu</h2>
+        <p class="sekcija-podnaslov">Rezervirane igre preuzimate i vraćate osobno na našoj adresi.</p>
+        <div class="lokacija">
+            <div class="lokacija-info">
+                <h3>📍 Igraonica Kockica</h3>
+                <p><strong>Adresa:</strong> Ilica 42, 10000 Zagreb</p>
+                <p><strong>Radno vrijeme:</strong><br>
+                    Ponedjeljak – petak: 10:00 – 20:00<br>
+                    Subota: 10:00 – 14:00<br>
+                    Nedjelja: zatvoreno</p>
+                <p>Igre rezervirane putem stranice preuzimate i vraćate na šalteru, gdje djelatnik potvrđuje preuzimanje i povrat.</p>
+                <a href="https://www.google.com/maps?q=45.8131,15.9694" target="_blank" rel="noopener" class="gumb gumb-sekundarni">Otvori u Google kartama</a>
+            </div>
+            <div class="lokacija-karta">
+                <iframe src="https://maps.google.com/maps?q=45.8131,15.9694&z=16&output=embed"
+                        title="Karta lokacije Igraonice Kockica" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="podnozje">
+    <div class="podnozje-sadrzaj">
+        <p>© <span id="godina-podnozje">2026</span> Igraonica · Projektni zadatak iz web programiranja</p>
+        <ul class="podnozje-veze">
+            <li><a href="igre.html">Katalog</a></li>
+            <li><a href="literatura.html">Literatura</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div id="toast-spremnik"></div>
+
+<script src="js/ilustracije.js"></script>
+<script src="js/glavni.js"></script>
+<script src="js/pocetna.js"></script>
+</body>
+</html>

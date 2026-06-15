@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Administracija - nadzorna ploča i posudbe - Igraonica">
+    <title>Administracija | Igraonica</title>
+    <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+
+<header class="zaglavlje">
+    <nav class="navigacija">
+        <a href="index.html" class="logo">🎲 Igra<span>onica</span></a>
+        <button class="hamburger" id="hamburger" aria-label="Otvori izbornik" aria-controls="nav-skupina" aria-expanded="false">☰</button>
+        <div class="nav-skupina" id="nav-skupina">
+            <ul class="nav-veze" id="nav-veze">
+                <li><a href="index.html">Početna</a></li>
+                <li><a href="igre.html">Katalog</a></li>
+            </ul>
+            <ul class="nav-auth" id="nav-auth"></ul>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <nav class="admin-podnav">
+        <a href="admin.html" class="aktivna">📊 Nadzorna ploča i posudbe</a>
+        <a href="admin-katalog.html">📚 Upravljanje katalogom</a>
+    </nav>
+
+    <!-- Nadzorna ploča -->
+    <section class="sekcija">
+        <h2>Nadzorna ploča</h2>
+        <p class="sekcija-podnaslov">Pregled poslovanja igraonice u stvarnom vremenu.</p>
+        <div class="statistika" id="stat-kartice">
+            <div class="ucitavanje">Učitavanje statistike...</div>
+        </div>
+    </section>
+
+    <section class="sekcija">
+        <div class="ploca-mreza">
+            <div class="ploca-blok">
+                <h3>Najtraženije igre</h3>
+                <ol class="ljestvica" id="najtrazenije">
+                    <li class="ucitavanje">Učitavanje...</li>
+                </ol>
+            </div>
+            <div class="ploca-blok">
+                <h3>Igre po kategoriji</h3>
+                <ul class="raspodjela" id="po-kategoriji">
+                    <li class="ucitavanje">Učitavanje...</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upravljanje posudbama -->
+    <section class="sekcija">
+        <h2>Rezervacije za preuzimanje</h2>
+        <p class="sekcija-podnaslov">Igre koje su članovi rezervirali i čekaju preuzimanje na šalteru.</p>
+        <div class="tablica-omot">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Igra</th>
+                        <th>Član</th>
+                        <th>Rezervirano</th>
+                        <th>Radnja</th>
+                    </tr>
+                </thead>
+                <tbody id="tablica-rezervacije">
+                    <tr><td colspan="4" class="tablica-prazno">Učitavanje...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="sekcija">
+        <h2>Preuzete igre (čekaju povrat)</h2>
+        <p class="sekcija-podnaslov">Igre koje su trenutno kod članova. Potvrdite povrat kada ih vrate.</p>
+        <div class="tablica-omot">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Igra</th>
+                        <th>Član</th>
+                        <th>Rok vraćanja</th>
+                        <th>Radnja</th>
+                    </tr>
+                </thead>
+                <tbody id="tablica-preuzete">
+                    <tr><td colspan="4" class="tablica-prazno">Učitavanje...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="podnozje">
+    <div class="podnozje-sadrzaj">
+        <p>© <span id="godina-podnozje">2026</span> Igraonica · Projektni zadatak iz web programiranja</p>
+        <ul class="podnozje-veze">
+            <li><a href="igre.html">Katalog</a></li>
+            <li><a href="literatura.html">Literatura</a></li>
+        </ul>
+    </div>
+</footer>
+
+<div id="toast-spremnik"></div>
+
+<script src="js/glavni.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
