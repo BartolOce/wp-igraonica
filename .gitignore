@@ -13,3 +13,6 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Konfiguracija razvojnih alata (nije dio projekta)
+.claude/
