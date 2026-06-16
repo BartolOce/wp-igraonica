@@ -1,4 +1,7 @@
-// API rute za omiljene igre (wishlist) - samo za prijavljene korisnike
+// =====================================================
+// omiljene.js - API rute za omiljene igre (wishlist)
+// Dohvat, dodavanje i uklanjanje - samo za prijavljene korisnike.
+// =====================================================
 const express = require('express');
 const baza = require('../db');
 const { samoPrijavljeni } = require('../middleware/autorizacija');

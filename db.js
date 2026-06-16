@@ -1,4 +1,7 @@
-// Spajanje na MySQL bazu podataka (mysql2 - promise verzija)
+// =====================================================
+// db.js - spajanje na MySQL bazu (mysql2, promise verzija)
+// Izvozi pool veza koji koriste sve API rute.
+// =====================================================
 const mysql = require('mysql2/promise');
 const config = require('./config');
 

@@ -1,5 +1,7 @@
-// Konfiguracija aplikacije
-// Postavke za spajanje na MySQL bazu (XAMPP - zadane postavke)
+// =====================================================
+// config.js - sredisnja konfiguracija aplikacije
+// Port posluzitelja, postavke MySQL baze (XAMPP) i sesije.
+// =====================================================
 module.exports = {
     port: 3000,
     baza: {

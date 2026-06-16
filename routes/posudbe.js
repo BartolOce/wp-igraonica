@@ -1,6 +1,8 @@
-// API rute za posudbe igara
+// =====================================================
+// posudbe.js - API rute za posudbe igara
 // Tijek: korisnik rezervira -> admin potvrdi preuzimanje -> admin potvrdi povrat.
-// Korisnik smije otkazati vlastitu rezervaciju dok je još nije preuzeo.
+// Korisnik smije otkazati vlastitu rezervaciju dok je jos nije preuzeo.
+// =====================================================
 const express = require('express');
 const baza = require('../db');
 const { samoPrijavljeni, samoAdmin } = require('../middleware/autorizacija');

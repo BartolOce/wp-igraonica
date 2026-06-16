@@ -1,4 +1,7 @@
-// API rute za recenzije igara
+// =====================================================
+// recenzije.js - API rute za recenzije igara
+// Pregled recenzija igre, pisanje (samo nakon posudbe) i brisanje.
+// =====================================================
 const express = require('express');
 const baza = require('../db');
 const { samoPrijavljeni } = require('../middleware/autorizacija');

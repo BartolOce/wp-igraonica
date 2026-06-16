@@ -25,7 +25,7 @@ function paletaZa(kategorija) {
     return PALETA_KATEGORIJA[kategorija] || ZADANA_PALETA;
 }
 
-// Osnovna boja kategorije (za sitne ukrase drugdje u sučelju)
+// Osnovna boja kategorije (za sitne ukrase drugdje u sucelju)
 function bojaKategorije(kategorija) {
     return paletaZa(kategorija)[0];
 }
@@ -43,10 +43,10 @@ function motivKockice(n) {
     </g>`;
 }
 
-// Crta motiv (središnji crtež) ovisno o kategoriji.
+// Crta motiv (sredisnji crtez) ovisno o kategoriji.
 function motivKategorije(kategorija, n) {
     switch (kategorija) {
-        case 'Strateška': // heksagoni (poput pločica Catana)
+        case 'Strateška': // heksagoni (poput plocica Catana)
             return `
                 <g fill="none" stroke="${n}" stroke-width="4" opacity="0.92">
                     <polygon points="150,38 178,54 178,86 150,102 122,86 122,54" fill="${n}" fill-opacity="0.18"/>
@@ -91,7 +91,7 @@ function motivKategorije(kategorija, n) {
                     `<rect x="${118 + c * 22}" y="${118 - r * 16}" width="20" height="14" rx="1"/>`
                 ).join('')).join('')}
             </g>`;
-        case 'Riječi': // slovne pločice
+        case 'Riječi': // slovne plocice
             return `<g font-family="Georgia, serif" font-weight="700" font-size="30" fill="#41331f">
                 ${[['I', 110], ['G', 140], ['R', 172], ['A', 204]].map(([s, x]) => `
                     <rect x="${x - 16}" y="62" width="32" height="36" rx="4" fill="#f1dcb8" stroke="${n}" stroke-width="2"/>
@@ -102,11 +102,15 @@ function motivKategorije(kategorija, n) {
     }
 }
 
+// Brojac instanci - svaki SVG dobiva jedinstven id gradijenta. Bez ovoga bi
+// vise igara iste kategorije u katalogu dijelilo isti id (nevazeci HTML).
+let brojacSVG = 0;
+
 // Omotac: gradi kompletan SVG s pozadinom, uzorkom tockica i zadanim motivom.
-// "sufiks" osigurava jedinstven id gradijenta kad je vise SVG-a na stranici.
+// "sufiks" razlikuje varijante na istoj stranici (a = motiv, b = kockice).
 function omotacSVG(kategorija, motivHTML, sufiks) {
     const [poz1, poz2, naglasak] = paletaZa(kategorija);
-    const id = 'poz-' + kategorija.replace(/[^a-zA-Z]/g, '') + '-' + sufiks;
+    const id = 'grad-' + sufiks + (brojacSVG++);
     return `
         <svg class="kutija-svg" viewBox="0 0 300 176" preserveAspectRatio="xMidYMid slice"
              xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustracija kategorije ${kategorija}">

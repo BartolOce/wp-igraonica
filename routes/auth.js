@@ -1,4 +1,7 @@
-// API rute za autentifikaciju: registracija, prijava, odjava, trenutni korisnik
+// =====================================================
+// auth.js - API rute za autentifikaciju
+// Registracija, prijava, odjava i dohvat trenutnog korisnika.
+// =====================================================
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const baza = require('../db');

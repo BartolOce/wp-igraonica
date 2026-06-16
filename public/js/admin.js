@@ -1,9 +1,9 @@
 // =====================================================
-// admin.js - nadzorna ploča i upravljanje posudbama
+// admin.js - nadzorna ploca i upravljanje posudbama
 // (potvrda preuzimanja i povrata - samo admin)
 // =====================================================
 
-// Dohvat i prikaz statistike na nadzornoj ploči
+// Dohvat i prikaz statistike na nadzornoj ploci
 async function ucitajPlocu() {
     try {
         const s = await apiZahtjev('/api/admin/statistika');
@@ -52,7 +52,7 @@ function danaOd(datum) {
     return Math.floor((Date.now() - new Date(datum).getTime()) / 86400000);
 }
 
-const PRAG_CEKANJA_DANA = 3; // rezervacija starija od ovoga se ističe
+const PRAG_CEKANJA_DANA = 3; // rezervacija starija od ovoga se istice
 
 // Dohvat svih posudbi i punjenje tablica (rezervacije + preuzete)
 async function ucitajPosudbe() {
@@ -63,7 +63,7 @@ async function ucitajPosudbe() {
         const rezervacije = sve.filter((p) => p.status === 'rezervirano');
         const preuzete = sve.filter((p) => p.status === 'preuzeto');
 
-        // rezervacije -> gumb "Označi preuzeto"
+        // rezervacije -> gumb "Oznaci preuzeto"
         if (rezervacije.length === 0) {
             rezTijelo.innerHTML = '<tr><td colspan="4" class="tablica-prazno">Nema rezervacija na čekanju.</td></tr>';
         } else {
@@ -86,7 +86,7 @@ async function ucitajPosudbe() {
             }).join('');
             postaviAkciju(rezTijelo, 'preuzmi');
 
-            // gumb "Otkaži" - admin otkazuje (briše) tuđu rezervaciju
+            // gumb "Otkazi" - admin otkazuje (brise) tudu rezervaciju
             rezTijelo.querySelectorAll('[data-otkazi]').forEach((gumb) => {
                 gumb.addEventListener('click', async () => {
                     if (!confirm('Otkazati ovu rezervaciju člana?')) return;
@@ -103,12 +103,12 @@ async function ucitajPosudbe() {
             });
         }
 
-        // preuzete -> gumb "Označi vraćeno"
+        // preuzete -> gumb "Oznaci vraceno"
         if (preuzete.length === 0) {
             preTijelo.innerHTML = '<tr><td colspan="4" class="tablica-prazno">Nema posuđenih igara.</td></tr>';
         } else {
             preTijelo.innerHTML = preuzete.map((p) => {
-                const danaKasni = danaOd(p.rok_vracanja); // > 0 ako je rok već prošao
+                const danaKasni = danaOd(p.rok_vracanja); // > 0 ako je rok vec prosao
                 const kasni = danaKasni > 0;
                 const rokPrikaz = kasni
                     ? `${formatirajDatum(p.rok_vracanja)} <span class="znacka znacka-nedostupno">Kasni ${danaKasni} d.</span>`

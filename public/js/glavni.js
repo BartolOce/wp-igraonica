@@ -3,7 +3,7 @@
 // (AJAX pomocnik, dinamicka navigacija, toast obavijesti)
 // =====================================================
 
-// Lokacija igraonice (preuzimanje i vraćanje igara) - izmišljeno mjesto
+// Lokacija igraonice (preuzimanje i vracanje igara) - izmisljeno mjesto
 const LOKACIJA = {
     naziv: 'Igraonica Kockica',
     adresa: 'Ilica 42, 10000 Zagreb',
@@ -149,7 +149,7 @@ function oznakaStatusa(status) {
     return `<span class="znacka ${klasa}">${tekst}</span>`;
 }
 
-// Sazet prikaz broja igraca: "2-4 igrača" ili "4 igrača"
+// Sazet prikaz broja igraca: "2-4 igraca" ili "4 igraca"
 function rasponIgraca(min, max) {
     return min === max ? `${min} igrača` : `${min}-${max} igrača`;
 }
@@ -245,7 +245,7 @@ function azurirajNavigaciju() {
         // navigacijske podstranice u sredini
         if (prijavljeniKorisnik.uloga === 'admin') {
             // administrator radi u administraciji: bez "Moj profil",
-            // a skrivamo i statičnu poveznicu "Početna"
+            // a skrivamo i staticnu poveznicu "Pocetna"
             const pocetna = centar.querySelector('a[href="index.html"]');
             if (pocetna) pocetna.closest('li').style.display = 'none';
             dodaj(centar, '<a href="admin.html">Administracija</a>');
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (hamburger && skupina) {
         hamburger.addEventListener('click', () => {
             const otvoreno = skupina.classList.toggle('otvoreno');
-            hamburger.setAttribute('aria-expanded', otvoreno); // stanje izbornika za čitače ekrana
+            hamburger.setAttribute('aria-expanded', otvoreno); // stanje izbornika za citace ekrana
         });
     }
 

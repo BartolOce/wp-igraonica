@@ -1,5 +1,8 @@
-// Igraonica - glavni posluzitelj (Node.js + Express)
+// =====================================================
+// server.js - glavni posluzitelj (Node.js + Express)
+// Postavlja middleware, montira API rute i pokrece posluzitelj.
 // Pokretanje: npm start  (prije prvog pokretanja: npm run init-baza)
+// =====================================================
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -9,7 +12,7 @@ const baza = require('./db');
 const app = express();
 
 // --- Middleware ---
-app.use(express.json());                              // citanje JSON tijela zahtjeva
+app.use(express.json({ limit: '20mb' }));             // citanje JSON tijela (veci limit zbog base64 slika)
 app.use(express.urlencoded({ extended: true }));
 app.use(session({                                     // sesije za prijavu korisnika
     secret: config.sesija.tajna,
@@ -74,9 +77,10 @@ app.use((greska, req, res, next) => {
 });
 
 // --- Pokretanje posluzitelja ---
-app.listen(config.port, async () => {
+const port = process.env.PORT || config.port; // PORT iz okoline (ako je zadani zauzet) ili zadani iz config.js
+app.listen(port, async () => {
     console.log('=========================================');
-    console.log(`  Igraonica radi na: http://localhost:${config.port}`);
+    console.log(`  Igraonica radi na: http://localhost:${port}`);
     console.log('=========================================');
     try {
         await baza.query('SELECT 1');

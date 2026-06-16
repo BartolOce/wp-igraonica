@@ -1,13 +1,25 @@
-// Skripta za inicijalizaciju baze podataka
-// Pokretanje: npm run init-baza
+// =====================================================
+// init-baza.js - inicijalizacija baze podataka
 // Stvara bazu "igraonica", sve tablice i ubacuje pocetne podatke.
+// Pokretanje: npm run init-baza
 // VAZNO: MySQL server (XAMPP) mora biti pokrenut!
+// =====================================================
 
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 const config = require('../config');
+
+// Naziv igre -> "slug" za ime mape sa slikama (isto pravilo kao u routes/igre.js)
+function nazivUSlug(naziv) {
+    const bezKvacica = { 'č': 'c', 'ć': 'c', 'ž': 'z', 'š': 's', 'đ': 'd' };
+    return String(naziv || '')
+        .toLowerCase()
+        .replace(/[čćžšđ]/g, (z) => bezKvacica[z])
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'igra';
+}
 
 async function glavna() {
     let veza;
@@ -116,7 +128,18 @@ async function glavna() {
             FOREIGN KEY (igra_id) REFERENCES igre(id) ON DELETE CASCADE
         ) ENGINE=InnoDB
     `);
-    console.log('Tablice stvorene: korisnici, igre, posudbe, recenzije, omiljene.');
+
+    // 5c) Tablica dodatnih slika igre (galerija) - veza prema igri.
+    //     Naslovna slika je u igre.slika_url, a ostale slike (za galeriju) su ovdje.
+    await veza.query(`
+        CREATE TABLE slike (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            igra_id INT NOT NULL,
+            putanja VARCHAR(500) NOT NULL,
+            FOREIGN KEY (igra_id) REFERENCES igre(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB
+    `);
+    console.log('Tablice stvorene: korisnici, igre, posudbe, recenzije, omiljene, slike.');
 
     // 6) Pocetni korisnici (lozinke se spremaju kao bcrypt hash)
     //    1 administrator + 3 clana; svi clanovi dijele lozinku 'lozinka123' (radi lakseg testiranja)
@@ -265,17 +288,18 @@ async function glavna() {
     `);
     console.log('Pocetne posudbe, recenzije i omiljene ubacene.');
 
-    // 11) Placeholder mape za slike svake igre: public/slike/<id>/
-    //     (u njih se kasnije stavljaju prave slike; .gitkeep cuva praznu mapu u gitu)
-    const [sveIgreId] = await veza.query('SELECT id FROM igre ORDER BY id');
+    // 11) Placeholder mape za slike svake igre: public/slike/<naziv>/
+    //     (mapa se zove po imenu igre radi lakseg rucnog ubacivanja slika;
+    //      .gitkeep cuva praznu mapu u gitu)
+    const [sveIgre] = await veza.query('SELECT naziv FROM igre ORDER BY id');
     const mapaSlika = path.join(__dirname, '..', 'public', 'slike');
     fs.mkdirSync(mapaSlika, { recursive: true });
-    for (const { id } of sveIgreId) {
-        const mapaIgre = path.join(mapaSlika, String(id));
+    for (const { naziv } of sveIgre) {
+        const mapaIgre = path.join(mapaSlika, nazivUSlug(naziv));
         fs.mkdirSync(mapaIgre, { recursive: true });
         fs.writeFileSync(path.join(mapaIgre, '.gitkeep'), '');
     }
-    console.log(`Stvorene placeholder mape za slike (public/slike/1..${sveIgreId.length}/).`);
+    console.log(`Stvorene placeholder mape za slike po imenu igre (public/slike/<naziv>/).`);
 
     await veza.end();
     console.log('');

@@ -1,4 +1,7 @@
-// Middleware funkcije za provjeru prijave i ovlasti korisnika
+// =====================================================
+// autorizacija.js - middleware za provjeru prijave i ovlasti
+// samoPrijavljeni trazi prijavu, samoAdmin trazi ulogu "admin".
+// =====================================================
 
 // Dopusta pristup samo prijavljenim korisnicima
 function samoPrijavljeni(req, res, next) {

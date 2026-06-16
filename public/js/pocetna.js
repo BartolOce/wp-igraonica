@@ -1,6 +1,6 @@
 // =====================================================
 // pocetna.js - logika naslovnice
-// (dinamičan hero, kategorije, najbolje ocijenjene igre)
+// (dinamican hero, kategorije, najbolje ocijenjene igre)
 // =====================================================
 
 // Prilagodba hero sekcije prijavljenom korisniku
@@ -14,7 +14,7 @@ function prilagodiHero() {
         <a href="profil.html" class="gumb gumb-sekundarni">Moje posudbe</a>`;
 }
 
-// Prikaz kategorija s brojem igara (izračunato iz dohvaćenih igara)
+// Prikaz kategorija s brojem igara (izracunato iz dohvacenih igara)
 function prikaziKategorije(igre) {
     const spremnik = document.getElementById('mreza-kategorija');
     const broj = {};
@@ -92,7 +92,7 @@ function postaviStepper() {
 }
 
 // Nakon prijave (zastavica iz prijava.js) prikazuje upozorenje o zakasnjelim
-// posudbama na naslovnici - s malom odgodom da se stranica prvo prikaze pa modal "uskoči".
+// posudbama na naslovnici - s malom odgodom da se stranica prvo prikaze pa modal "uskoci".
 async function najaviZakasnjenje() {
     if (!prijavljeniKorisnik || sessionStorage.getItem('najavaZakasnjenja') !== '1') return;
     sessionStorage.removeItem('najavaZakasnjenja');
@@ -115,7 +115,7 @@ async function najaviZakasnjenje() {
             return `<li><strong>${pobjegniHTML(p.naziv)}</strong> — kasni ${dana} ${dana === 1 ? 'dan' : 'dana'} (rok je bio ${formatirajDatum(p.rok_vracanja)})</li>`;
         }).join('');
 
-        await new Promise((r) => setTimeout(r, 700)); // mala odgoda prije nego modal "uskoči"
+        await new Promise((r) => setTimeout(r, 700)); // mala odgoda prije nego modal "uskoci"
         await prikaziModal({
             naslov: '⏰ Imate igre za vraćanje',
             sadrzajHTML: `<p>Sljedeće ste igre trebali već vratiti. Molimo donesite ih u igraonicu što prije:</p>
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await korisnikUcitan; // ceka provjeru sesije i ucitavanje omiljenih
     prilagodiHero();
     postaviStepper();
-    najaviZakasnjenje(); // upozorenje o kašnjenju nakon preusmjeravanja s prijave
+    najaviZakasnjenje(); // upozorenje o kasnjenju nakon preusmjeravanja s prijave
 
     try {
         const igre = await apiZahtjev('/api/igre');

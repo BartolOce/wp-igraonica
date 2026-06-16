@@ -38,14 +38,14 @@ function celijaIgre(p) {
             <small style="color: var(--tinta-svijetla);">${pobjegniHTML(p.izdavac)}</small>`;
 }
 
-// Broj dana od danas do roka (negativno = rok je prošao)
+// Broj dana od danas do roka (negativno = rok je prosao)
 function daniDoRoka(rok) {
     const d = new Date(); d.setHours(0, 0, 0, 0);
     const r = new Date(rok); r.setHours(0, 0, 0, 0);
     return Math.round((r - d) / 86400000);
 }
 
-// Obavijest na vrhu profila kad rok posudbe istječe ili je prošao
+// Obavijest na vrhu profila kad rok posudbe istjece ili je prosao
 function prikaziObavijestiRoka(posudbe) {
     const spremnik = document.getElementById('obavijesti');
     if (!spremnik) return;

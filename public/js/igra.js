@@ -1,5 +1,5 @@
 // =====================================================
-// igra.js - stranica s detaljima društvene igre
+// igra.js - stranica s detaljima drustvene igre
 // (galerija, podaci, rezervacija, omiljene, recenzije)
 // =====================================================
 
@@ -15,25 +15,26 @@ function posudioIkad() {
     return mojePosudbeOveIgre.some((p) => p.status === 'preuzeto' || p.status === 'vraceno');
 }
 
-// Niz "slika" za galeriju. Ako igra ima pravu sliku, prvi slajd je ta slika
-// s tematskom ilustracijom u podlozi - ako se slika ne učita (onerror), ostaje
-// ilustracija pa galerija nikad ne prikazuje "slomljenu" sliku.
+// Niz slajdova za galeriju: naslovna (slika_url) + sve dodatne slike (igra.slike).
+// Svaka prava slika ima tematsku ilustraciju u podlozi - ako se ne ucita (onerror),
+// ostaje ilustracija pa galerija nikad ne prikazuje "slomljenu" sliku.
+// Ako igra nema nijednu pravu sliku, prikazuju se dvije generirane ilustracije.
 function slajdoviIgre(igra) {
-    const slajdovi = [];
-    if (igra.slika_url) {
-        slajdovi.push(`<div class="galerija-slika-omot">
+    const putanje = [];
+    if (igra.slika_url) putanje.push(igra.slika_url);
+    if (Array.isArray(igra.slike)) putanje.push(...igra.slike);
+
+    if (putanje.length === 0) {
+        return [ilustracijaKategorije(igra.kategorija), ilustracijaKockice(igra.kategorija)];
+    }
+    return putanje.map((url) => `<div class="galerija-slika-omot">
             ${ilustracijaKategorije(igra.kategorija)}
-            <img class="galerija-img" src="${pobjegniHTML(igra.slika_url)}"
+            <img class="galerija-img" src="${pobjegniHTML(url)}"
                  alt="Slika igre ${pobjegniHTML(igra.naziv)}" onerror="this.style.display='none'">
         </div>`);
-    } else {
-        slajdovi.push(ilustracijaKategorije(igra.kategorija));
-    }
-    slajdovi.push(ilustracijaKockice(igra.kategorija));
-    return slajdovi;
 }
 
-// HTML galerije s trakom, strelicama i točkicama
+// HTML galerije s trakom, strelicama i tockicama
 function galerijaHTML(igra) {
     const slajdovi = slajdoviIgre(igra);
     const visestruko = slajdovi.length > 1;
@@ -51,7 +52,7 @@ function galerijaHTML(igra) {
         </div>`;
 }
 
-// Upravljanje galerijom (strelice, točkice, scroll)
+// Upravljanje galerijom (strelice, tockice, scroll)
 function postaviGaleriju() {
     const traka = document.getElementById('galerija-traka');
     if (!traka) return;

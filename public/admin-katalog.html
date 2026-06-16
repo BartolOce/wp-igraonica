@@ -35,7 +35,7 @@
             Dodavanje novih igara te uređivanje i brisanje postojećih.
         </p>
 
-        <!-- Obrazac za dodavanje / uređivanje igre -->
+        <!-- Obrazac za dodavanje / uredivanje igre -->
         <div class="obrazac-kartica obrazac-kartica-siroka" style="margin-bottom: 2rem;">
             <h2 style="font-size: 1.3rem; margin-bottom: 1rem;" id="forma-naslov">Dodaj novu igru</h2>
             <form id="forma-igra" novalidate>
@@ -99,10 +99,16 @@
                     </div>
                 </div>
                 <div class="polje">
-                    <label for="slika-url">Slika igre (neobvezno)</label>
-                    <input type="text" id="slika-url" name="slika_url" placeholder="/slike/5/box.jpg  (ili https://...)">
-                    <p class="napomena">Preporuka: spremi sliku u <code>public/slike/&lt;id igre&gt;/</code> pa ovdje upiši lokalnu putanju (npr. <code>/slike/5/box.jpg</code>). Može i vanjski URL. Ako se ostavi prazno, prikazuje se tematska ilustracija. Mapa za novu igru nastaje automatski nakon spremanja.</p>
-                    <span class="greska-poruka"></span>
+                    <label>Slike igre (neobvezno)</label>
+                    <p class="napomena">Prva slika je <strong>naslovna</strong> (prikazuje se u katalogu i na početnoj); ostale se vide u galeriji na stranici igre. Učitaj datoteke s računala <strong>ili</strong> zalijepi URL slike. Ako nema slika, prikazuje se tematska ilustracija. Mape se zovu po imenu igre (npr. <code>public/slike/catan/</code>) — slike možeš ubaciti i <strong>ručno u tu mapu</strong> pa se automatski prikazuju.</p>
+                    <div class="slike-unos">
+                        <label class="gumb gumb-mali gumb-sekundarni" for="slika-datoteka">📁 Učitaj slike</label>
+                        <input type="file" id="slika-datoteka" accept="image/*" multiple hidden>
+                        <input type="text" id="slika-url" placeholder="ili zalijepi URL slike (https://...)">
+                        <button type="button" class="gumb gumb-mali gumb-sekundarni" id="dodaj-url">Dodaj URL</button>
+                    </div>
+                    <div class="slike-pregled" id="slike-pregled"></div>
+                    <span class="greska-poruka" id="greska-slike"></span>
                 </div>
                 <div class="polje">
                     <label for="opis">Kratki opis</label>

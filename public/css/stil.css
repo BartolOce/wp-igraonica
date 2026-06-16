@@ -1,6 +1,6 @@
 /* ===================================================
    Igraonica - vlastiti CSS (vintage / retro tema)
-   Estetika: stara kutija društvene igre - zemljani
+   Estetika: stara kutija drustvene igre - zemljani
    tonovi, deblji okviri, "naljepnice", topla tipografija.
    Tehnike: CSS varijable, Flexbox, Grid, media upiti.
    Fontovi: web-safe "slab serif" stack (Rockwell/Georgia) -
@@ -47,7 +47,7 @@ html {
 body {
     font-family: var(--serif);
     background-color: var(--papir);
-    /* suptilna "papirnata" tekstura od točkica */
+    /* suptilna "papirnata" tekstura od tockica */
     background-image:
         radial-gradient(rgba(44, 34, 24, 0.05) 1px, transparent 1px),
         radial-gradient(rgba(44, 34, 24, 0.04) 1px, transparent 1px);
@@ -143,7 +143,7 @@ img {
 }
 
 .nav-veze {
-    margin: 0 auto; /* centrira podstranice u raspoloživom prostoru */
+    margin: 0 auto; /* centrira podstranice u raspolozivom prostoru */
 }
 
 .nav-auth {
@@ -664,7 +664,7 @@ img {
     border-radius: 999px;
 }
 
-/* kartice u karuselu imaju fiksnu širinu kako bi se mogle listati */
+/* kartice u karuselu imaju fiksnu sirinu kako bi se mogle listati */
 .karusel-traka > * {
     flex: 0 0 auto;
     width: 230px;
@@ -720,7 +720,7 @@ img {
     display: block;
 }
 
-/* ---------- Mreža igara (kartice "kutije") ---------- */
+/* ---------- Mreza igara (kartice "kutije") ---------- */
 .mreza-igara {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
@@ -873,7 +873,7 @@ img {
     font-style: italic;
 }
 
-/* ---------- Značke ("pečati / naljepnice") ---------- */
+/* ---------- Znacke ("pecati / naljepnice") ---------- */
 .znacka {
     display: inline-block;
     padding: 0.18rem 0.65rem;
@@ -1032,7 +1032,7 @@ img {
     margin-bottom: 1.1rem;
 }
 
-/* Svojstva igre (broj igrača, trajanje, složenost) */
+/* Svojstva igre (broj igraca, trajanje, slozenost) */
 .svojstva-igre {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1357,7 +1357,7 @@ img {
     font-style: italic;
 }
 
-/* Stanje greške kod validacije */
+/* Stanje greske kod validacije */
 .polje.neispravno input,
 .polje.neispravno textarea,
 .polje.neispravno select {
@@ -1402,7 +1402,7 @@ img {
     color: var(--tinta-svijetla);
 }
 
-/* Opće poruke (uspjeh / greška) unutar stranice */
+/* Opce poruke (uspjeh / greska) unutar stranice */
 .poruka {
     display: none;
     padding: 0.85rem 1.1rem;
@@ -1585,7 +1585,7 @@ tbody tr.redak-istaknut td {
     word-break: break-all;
 }
 
-/* ---------- Administracija: pod-navigacija i ploča ---------- */
+/* ---------- Administracija: pod-navigacija i ploca ---------- */
 .admin-podnav {
     display: flex;
     gap: 0.5rem;
@@ -1775,7 +1775,7 @@ tbody tr.redak-istaknut td {
     }
 }
 
-/* ---------- Podnožje ---------- */
+/* ---------- Podnozje ---------- */
 .podnozje {
     background-color: var(--tinta);
     background-image: linear-gradient(180deg, #2c2218, #211910);
@@ -1810,7 +1810,7 @@ tbody tr.redak-istaknut td {
     list-style: none;
 }
 
-/* ---------- Učitavanje ---------- */
+/* ---------- Ucitavanje ---------- */
 .ucitavanje {
     text-align: center;
     color: var(--tinta-svijetla);
@@ -1877,6 +1877,103 @@ tbody tr.redak-istaknut td {
 @keyframes modal-ulaz {
     from { opacity: 0; transform: translateY(-14px) scale(0.9); }
     to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- Upravljanje slikama u obrascu (admin) ---------- */
+.slike-unos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.slike-unos label.gumb {
+    cursor: pointer;
+    margin: 0;
+}
+
+.slike-unos input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.55rem 0.8rem;
+    border: 2px solid var(--rub-tamni);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: var(--serif);
+    background-color: var(--pergament-2);
+    color: var(--tinta);
+}
+
+.slike-pregled {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+}
+
+.slika-thumb {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid var(--rub-tamni);
+    background-color: var(--pergament-2);
+}
+
+.slika-thumb.naslovna {
+    border-color: var(--zlatna);
+    box-shadow: 0 0 0 2px var(--zlatna-svijetla);
+}
+
+.slika-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.slika-oznaka {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--zlatna);
+    color: var(--tinta);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 1px 0;
+}
+
+.slika-ukloni,
+.slika-cover {
+    position: absolute;
+    top: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.slika-ukloni {
+    right: 3px;
+    background-color: var(--crvena);
+    color: var(--pergament);
+}
+
+.slika-cover {
+    left: 3px;
+    background-color: rgba(246, 238, 217, 0.92);
+    color: var(--zlatna);
 }
 
 /* =====================================================

@@ -1,9 +1,14 @@
 // =====================================================
 // admin-katalog.js - upravljanje katalogom igara
-// (dodavanje, uređivanje i brisanje - samo admin)
+// (dodavanje, uredivanje i brisanje - samo admin)
+// Slike: prva u popisu je naslovna, ostale idu u galeriju.
 // =====================================================
 
 let nacinUredivanja = false; // false = dodavanje nove igre, true = uredivanje postojece
+
+// uredeni popis slika trenutne igre; svaka stavka je { vrijednost } gdje je
+// vrijednost URL/putanja ili base64 (data URL) novouclitane datoteke. Prva = naslovna.
+let slikeUnos = [];
 
 const polja = () => ({
     naziv: document.getElementById('naziv'),
@@ -15,7 +20,6 @@ const polja = () => ({
     trajanje: document.getElementById('trajanje'),
     tezina: document.getElementById('tezina'),
     broj_primjeraka: document.getElementById('broj-primjeraka'),
-    slika_url: document.getElementById('slika-url'),
     opis: document.getElementById('opis')
 });
 
@@ -32,10 +36,43 @@ const pravilaIgre = {
     trajanje: (v) => Validacija.broj(v, 1, 1000, 'Trajanje'),
     tezina: (v) => (['lagana', 'srednja', 'teška'].includes(v) ? '' : 'Odaberite težinu.'),
     broj_primjeraka: (v) => Validacija.broj(v, 1, 100, 'Broj primjeraka'),
-    // URL slike je neobvezan: prazno je u redu, inace mora biti http(s) poveznica
-    slika_url: (v) => (!v || v.trim() === '' || /^https?:\/\/.+/i.test(v.trim()) || /^\/[^\s]+$/.test(v.trim()) ? '' : 'Unesite http(s):// poveznicu ili lokalnu putanju (npr. /slike/5/box.jpg).'),
     opis: (v) => Validacija.minDuljina(v, 10, 'Opis')
 };
+
+// --- Slike (naslovna + galerija) ---
+
+// Prikaz pretpregleda svih dodanih slika (prva je naslovna)
+function prikaziSlike() {
+    const spremnik = document.getElementById('slike-pregled');
+    spremnik.innerHTML = slikeUnos.map((s, i) => `
+        <div class="slika-thumb${i === 0 ? ' naslovna' : ''}">
+            <img src="${pobjegniHTML(s.vrijednost)}" alt="Slika ${i + 1}" onerror="this.style.opacity='0.25'">
+            ${i === 0
+                ? '<span class="slika-oznaka">Naslovna</span>'
+                : `<button type="button" class="slika-cover" data-cover="${i}" title="Postavi kao naslovnu">★</button>`}
+            <button type="button" class="slika-ukloni" data-ukloni="${i}" title="Ukloni sliku">×</button>
+        </div>`).join('');
+
+    spremnik.querySelectorAll('[data-ukloni]').forEach((gumb) => {
+        gumb.addEventListener('click', () => {
+            slikeUnos.splice(Number(gumb.dataset.ukloni), 1);
+            prikaziSlike();
+        });
+    });
+    spremnik.querySelectorAll('[data-cover]').forEach((gumb) => {
+        gumb.addEventListener('click', () => {
+            const i = Number(gumb.dataset.cover);
+            const [stavka] = slikeUnos.splice(i, 1); // makni s trenutne pozicije
+            slikeUnos.unshift(stavka);               // stavi na pocetak (naslovna)
+            prikaziSlike();
+        });
+    });
+}
+
+function dodajSliku(vrijednost) {
+    slikeUnos.push({ vrijednost });
+    prikaziSlike();
+}
 
 // Ucitavanje svih igara u tablicu
 async function ucitajTablicu() {
@@ -74,7 +111,7 @@ async function ucitajTablicu() {
             });
         });
 
-        // gumb "Obriši" - uz potvrdu korisnika
+        // gumb "Obrisi" - uz potvrdu korisnika
         tijelo.querySelectorAll('[data-obrisi]').forEach((gumb) => {
             gumb.addEventListener('click', async () => {
                 const igra = igre.find((i) => i.id === Number(gumb.dataset.obrisi));
@@ -106,8 +143,8 @@ async function ucitajKategorije() {
     } catch (greska) { /* nije kljucno za rad stranice */ }
 }
 
-// Prebacivanje obrasca u nacin uredivanja
-function pokreniUredivanje(igra) {
+// Prebacivanje obrasca u nacin uredivanja (dohvaca i galeriju slika)
+async function pokreniUredivanje(igra) {
     nacinUredivanja = true;
     document.getElementById('igra-id').value = igra.id;
     const p = polja();
@@ -120,8 +157,18 @@ function pokreniUredivanje(igra) {
     p.trajanje.value = igra.trajanje;
     p.tezina.value = igra.tezina;
     p.broj_primjeraka.value = igra.broj_primjeraka;
-    p.slika_url.value = igra.slika_url || '';
     p.opis.value = igra.opis || '';
+
+    // popuni slike: naslovna (slika_url) + galerija (dohvat punih podataka igre)
+    slikeUnos = [];
+    try {
+        const puna = await apiZahtjev(`/api/igre/${igra.id}`);
+        if (puna.slika_url) slikeUnos.push({ vrijednost: puna.slika_url });
+        (puna.slike || []).forEach((url) => slikeUnos.push({ vrijednost: url }));
+    } catch (greska) {
+        if (igra.slika_url) slikeUnos.push({ vrijednost: igra.slika_url });
+    }
+    prikaziSlike();
 
     document.getElementById('forma-naslov').textContent = `Uredi igru: ${igra.naziv}`;
     document.getElementById('gumb-spremi').textContent = 'Spremi promjene';
@@ -134,6 +181,9 @@ function prekiniUredivanje() {
     nacinUredivanja = false;
     document.getElementById('forma-igra').reset();
     document.getElementById('igra-id').value = '';
+    slikeUnos = [];
+    prikaziSlike();
+    document.getElementById('greska-slike').style.display = 'none';
     document.getElementById('forma-naslov').textContent = 'Dodaj novu igru';
     document.getElementById('gumb-spremi').textContent = 'Dodaj igru';
     document.getElementById('gumb-odustani').style.display = 'none';
@@ -167,8 +217,8 @@ async function spremiIgru(dogadaj) {
         trajanje: Number(p.trajanje.value),
         tezina: p.tezina.value,
         broj_primjeraka: Number(p.broj_primjeraka.value),
-        slika_url: p.slika_url.value.trim(),
-        opis: p.opis.value.trim()
+        opis: p.opis.value.trim(),
+        slike: slikeUnos.map((s) => s.vrijednost) // prva = naslovna, ostale = galerija
     };
 
     try {
@@ -198,6 +248,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('forma-igra').addEventListener('submit', spremiIgru);
     document.getElementById('gumb-odustani').addEventListener('click', prekiniUredivanje);
+
+    // ucitavanje datoteka s racunala -> svaka se procita u base64 (data URL)
+    document.getElementById('slika-datoteka').addEventListener('change', (dogadaj) => {
+        [...dogadaj.target.files].forEach((datoteka) => {
+            const citac = new FileReader();
+            citac.onload = () => dodajSliku(citac.result);
+            citac.readAsDataURL(datoteka);
+        });
+        dogadaj.target.value = ''; // dopusti ponovni odabir iste datoteke
+    });
+
+    // dodavanje slike preko URL-a
+    document.getElementById('dodaj-url').addEventListener('click', () => {
+        const polje = document.getElementById('slika-url');
+        const greska = document.getElementById('greska-slike');
+        const url = polje.value.trim();
+        if (url === '') return;
+        if (!/^https?:\/\/.+/i.test(url) && !/^\/slike\/[\w./-]+$/i.test(url)) {
+            greska.textContent = 'Unesite ispravan URL (https://...) ili lokalnu putanju (/slike/...).';
+            greska.style.display = 'block';
+            return;
+        }
+        greska.style.display = 'none';
+        dodajSliku(url);
+        polje.value = '';
+    });
 
     await Promise.all([ucitajTablicu(), ucitajKategorije()]);
 });
