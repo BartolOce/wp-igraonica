@@ -86,13 +86,16 @@ function srceGumbHTML(igraId) {
             aria-label="Omiljeno" title="${aktivna ? 'Ukloni iz omiljenih' : 'Dodaj u omiljene'}">${aktivna ? '♥' : '♡'}</button>`;
 }
 
-// Ozici sve "srce" gumbe unutar spremnika (kartica je <a> pa sprjecavamo navigaciju)
-function postaviSlusaceSrca(spremnik) {
+// Ozici sve "srce" gumbe unutar spremnika (kartica je <a> pa sprjecavamo navigaciju).
+// Neobvezni "naPromjenu" poziva se nakon prebacivanja omiljene (npr. da profil
+// osvjezi popis i ukloni karticu koja je upravo maknuta iz omiljenih).
+function postaviSlusaceSrca(spremnik, naPromjenu) {
     spremnik.querySelectorAll('[data-omiljena]').forEach((gumb) => {
-        gumb.addEventListener('click', (dogadaj) => {
+        gumb.addEventListener('click', async (dogadaj) => {
             dogadaj.preventDefault();
             dogadaj.stopPropagation();
-            prebaciOmiljenu(Number(gumb.dataset.omiljena), gumb);
+            await prebaciOmiljenu(Number(gumb.dataset.omiljena), gumb);
+            if (naPromjenu) naPromjenu();
         });
     });
 }
@@ -195,6 +198,30 @@ function prikaziToast(poruka, tip = 'uspjeh') {
     spremnik.appendChild(toast);
 }
 
+// Modalni prozor preko cijele stranice. Vraca Promise koji se rjesava kad ga
+// korisnik zatvori (klik na gumb ili izvan prozora). Sadrzaj se prima kao HTML,
+// pa pozivatelj mora pobjeci ('escape') sve korisnicke podatke.
+function prikaziModal({ naslov, sadrzajHTML, tekstGumba = 'U redu' }) {
+    return new Promise((resolve) => {
+        const prekrivac = document.createElement('div');
+        prekrivac.className = 'modal-prekrivac';
+        prekrivac.innerHTML = `
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-naslov">
+                <h2 id="modal-naslov">${pobjegniHTML(naslov)}</h2>
+                <div class="modal-tijelo">${sadrzajHTML}</div>
+                <div class="modal-dno">
+                    <button class="gumb" type="button">${pobjegniHTML(tekstGumba)}</button>
+                </div>
+            </div>`;
+        const zatvori = () => { prekrivac.remove(); resolve(); };
+        prekrivac.querySelector('.modal-dno button').addEventListener('click', zatvori);
+        prekrivac.addEventListener('click', (dogadaj) => {
+            if (dogadaj.target === prekrivac) zatvori(); // klik izvan prozora zatvara
+        });
+        document.body.appendChild(prekrivac);
+    });
+}
+
 // --- Dinamicka navigacija ---
 // Ovisno o tome je li korisnik prijavljen, u izbornik se dodaju
 // razlicite poveznice (Prijava/Registracija ili Profil/Odjava).
@@ -217,9 +244,14 @@ function azurirajNavigaciju() {
     if (prijavljeniKorisnik) {
         // navigacijske podstranice u sredini
         if (prijavljeniKorisnik.uloga === 'admin') {
+            // administrator radi u administraciji: bez "Moj profil",
+            // a skrivamo i statičnu poveznicu "Početna"
+            const pocetna = centar.querySelector('a[href="index.html"]');
+            if (pocetna) pocetna.closest('li').style.display = 'none';
             dodaj(centar, '<a href="admin.html">Administracija</a>');
+        } else {
+            dodaj(centar, '<a href="profil.html">Moj profil</a>');
         }
-        dodaj(centar, '<a href="profil.html">Moj profil</a>');
         // pozdrav i odjava desno
         dodaj(desno, `<span class="nav-pozdrav">👋 ${pobjegniHTML(prijavljeniKorisnik.ime)}</span>`);
         const liOdjava = dodaj(desno, '<button class="gumb-odjava" type="button">Odjava</button>');

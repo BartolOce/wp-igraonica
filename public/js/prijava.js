@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             prikaziToast(odgovor.poruka, 'uspjeh');
             // admina vodi na administraciju, ostale na naslovnicu
             const odrediste = odgovor.korisnik.uloga === 'admin' ? 'admin.html' : 'index.html';
+            // zastavica: naslovnica nakon preusmjeravanja prikazuje upozorenje o kašnjenju
+            sessionStorage.setItem('najavaZakasnjenja', '1');
             setTimeout(() => { location.href = odrediste; }, 700);
         } catch (greska) {
             porukaGreska.textContent = greska.message;

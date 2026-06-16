@@ -73,6 +73,16 @@ router.post('/', samoPrijavljeni, async (req, res, next) => {
         }
         const igra = igre[0];
 
+        // Korisnik koji kasni s vracanjem ne moze rezervirati nove igre
+        const [zakasnjele] = await baza.query(
+            `SELECT COUNT(*) AS broj FROM posudbe
+             WHERE korisnik_id = ? AND status = 'preuzeto' AND rok_vracanja < CURDATE()`,
+            [korisnikId]
+        );
+        if (zakasnjele[0].broj > 0) {
+            return res.status(409).json({ greska: 'Imate igru kojoj je istekao rok vraćanja. Vratite je prije nove rezervacije.' });
+        }
+
         // Ima li korisnik vec aktivnu posudbu (rezervaciju ili preuzetu) za ovu igru?
         const [vecAktivna] = await baza.query(
             `SELECT id FROM posudbe WHERE korisnik_id = ? AND igra_id = ? AND status IN ${AKTIVNI_STATUSI}`,
@@ -165,6 +175,24 @@ router.put('/:id/vrati', samoAdmin, async (req, res, next) => {
             return res.status(404).json({ greska: 'Posudba nije pronađena ili igra nije bila preuzeta.' });
         }
         res.json({ poruka: 'Povrat igre je potvrđen. Hvala!' });
+    } catch (greska) {
+        next(greska);
+    }
+});
+
+// PUT /api/posudbe/:id/admin-otkazi - ADMIN otkazuje (brise) tudju rezervaciju.
+// Otkazati se moze samo rezervacija koja jos nije preuzeta.
+router.put('/:id/admin-otkazi', samoAdmin, async (req, res, next) => {
+    try {
+        const [rezultat] = await baza.query(
+            `UPDATE posudbe SET status = 'otkazano'
+             WHERE id = ? AND status = 'rezervirano'`,
+            [req.params.id]
+        );
+        if (rezultat.affectedRows === 0) {
+            return res.status(404).json({ greska: 'Rezervacija nije pronađena ili je već obrađena.' });
+        }
+        res.json({ poruka: 'Rezervacija je otkazana.' });
     } catch (greska) {
         next(greska);
     }

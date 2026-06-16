@@ -147,7 +147,7 @@ async function ucitajOmiljeneIgre() {
             return;
         }
         spremnik.innerHTML = igre.map(karticaIgreHTML).join('');
-        postaviSlusaceSrca(spremnik);
+        postaviSlusaceSrca(spremnik, ucitajOmiljeneIgre); // ukloni karticu odmah nakon micanja iz omiljenih
     } catch (greska) {
         spremnik.innerHTML = `<div class="ucitavanje">${pobjegniHTML(greska.message)}</div>`;
     }

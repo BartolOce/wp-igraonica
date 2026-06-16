@@ -33,7 +33,7 @@ const pravilaIgre = {
     tezina: (v) => (['lagana', 'srednja', 'teška'].includes(v) ? '' : 'Odaberite težinu.'),
     broj_primjeraka: (v) => Validacija.broj(v, 1, 100, 'Broj primjeraka'),
     // URL slike je neobvezan: prazno je u redu, inace mora biti http(s) poveznica
-    slika_url: (v) => (!v || v.trim() === '' || /^https?:\/\/.+/i.test(v.trim()) ? '' : 'URL mora počinjati s http:// ili https://'),
+    slika_url: (v) => (!v || v.trim() === '' || /^https?:\/\/.+/i.test(v.trim()) || /^\/[^\s]+$/.test(v.trim()) ? '' : 'Unesite http(s):// poveznicu ili lokalnu putanju (npr. /slike/5/box.jpg).'),
     opis: (v) => Validacija.minDuljina(v, 10, 'Opis')
 };
 

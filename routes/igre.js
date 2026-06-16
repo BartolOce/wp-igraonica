@@ -1,5 +1,7 @@
 // API rute za rad s drustvenim igrama (pregled za sve, uredivanje samo za admina)
 const express = require('express');
+const path = require('path');
+const fs = require('fs').promises;
 const baza = require('../db');
 const { samoAdmin } = require('../middleware/autorizacija');
 
@@ -60,10 +62,11 @@ function provjeriIgru(podaci) {
     if (!Number.isInteger(primjerci) || primjerci < 1 || primjerci > 100) {
         greske.broj_primjeraka = 'Broj primjeraka mora biti između 1 i 100.';
     }
-    // slika_url je neobvezna, ali ako je upisana mora biti ispravan http(s) URL
+    // slika_url je neobvezna; ako je upisana mora biti vanjski http(s) URL
+    // ILI lokalna putanja unutar projekta (npr. /slike/5/box.jpg)
     const slika = (podaci.slika_url || '').trim();
-    if (slika !== '' && !/^https?:\/\/.+/i.test(slika)) {
-        greske.slika_url = 'URL slike mora počinjati s http:// ili https://';
+    if (slika !== '' && !/^https?:\/\/.+/i.test(slika) && !/^\/[^\s]+$/.test(slika)) {
+        greske.slika_url = 'Unesite http(s):// poveznicu ili lokalnu putanju (npr. /slike/5/box.jpg).';
     }
     return greske;
 }
@@ -72,6 +75,18 @@ function provjeriIgru(podaci) {
 function urlSlikeIliNull(vrijednost) {
     const slika = (vrijednost || '').trim();
     return slika === '' ? null : slika;
+}
+
+// Stvara placeholder mapu za slike igre (public/slike/<id>/). Ne smije srušiti
+// zahtjev ako ne uspije - mapa je samo pomoć pri organizaciji slika.
+async function stvoriMapuSlika(igraId) {
+    try {
+        const mapa = path.join(__dirname, '..', 'public', 'slike', String(igraId));
+        await fs.mkdir(mapa, { recursive: true });
+        await fs.writeFile(path.join(mapa, '.gitkeep'), '');
+    } catch (greska) {
+        console.error('Nije moguće stvoriti mapu za slike igre', igraId, '-', greska.message);
+    }
 }
 
 // GET /api/igre/kategorije - popis svih kategorija (za filter u katalogu)
@@ -132,6 +147,7 @@ router.post('/', samoAdmin, async (req, res, next) => {
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [naziv.trim(), izdavac.trim(), kategorija.trim(), godina, min_igraca, max_igraca, trajanje, tezina, (opis || '').trim(), broj_primjeraka, urlSlikeIliNull(slika_url)]
         );
+        await stvoriMapuSlika(rezultat.insertId); // placeholder mapa za slike nove igre
         res.status(201).json({ poruka: 'Igra je dodana u katalog.', id: rezultat.insertId });
     } catch (greska) {
         next(greska);
@@ -147,6 +163,19 @@ router.put('/:id', samoAdmin, async (req, res, next) => {
         }
 
         const { naziv, izdavac, kategorija, godina, min_igraca, max_igraca, trajanje, tezina, opis, broj_primjeraka, slika_url } = req.body;
+
+        // broj primjeraka ne smije pasti ispod broja trenutno zauzetih (rezervirano + preuzeto)
+        const [zauzeti] = await baza.query(
+            `SELECT COUNT(*) AS broj FROM posudbe WHERE igra_id = ? AND status IN ('rezervirano', 'preuzeto')`,
+            [req.params.id]
+        );
+        if (Number(broj_primjeraka) < zauzeti[0].broj) {
+            return res.status(409).json({
+                greska: `Ne možete smanjiti broj primjeraka ispod ${zauzeti[0].broj} jer je toliko trenutno rezervirano ili posuđeno.`,
+                polja: { broj_primjeraka: `Najmanje ${zauzeti[0].broj} (trenutno zauzeto).` }
+            });
+        }
+
         const [rezultat] = await baza.query(
             `UPDATE igre SET naziv = ?, izdavac = ?, kategorija = ?, godina = ?, min_igraca = ?,
                     max_igraca = ?, trajanje = ?, tezina = ?, opis = ?, broj_primjeraka = ?, slika_url = ? WHERE id = ?`,

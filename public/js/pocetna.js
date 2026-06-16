@@ -91,10 +91,45 @@ function postaviStepper() {
     prikaziKorak(0);
 }
 
+// Nakon prijave (zastavica iz prijava.js) prikazuje upozorenje o zakasnjelim
+// posudbama na naslovnici - s malom odgodom da se stranica prvo prikaze pa modal "uskoči".
+async function najaviZakasnjenje() {
+    if (!prijavljeniKorisnik || sessionStorage.getItem('najavaZakasnjenja') !== '1') return;
+    sessionStorage.removeItem('najavaZakasnjenja');
+    try {
+        const posudbe = await apiZahtjev('/api/posudbe/moje');
+        const danas = new Date();
+        danas.setHours(0, 0, 0, 0);
+        const zakasnjele = posudbe.filter((p) => {
+            if (p.status !== 'preuzeto' || !p.rok_vracanja) return false;
+            const rok = new Date(p.rok_vracanja);
+            rok.setHours(0, 0, 0, 0);
+            return rok < danas;
+        });
+        if (zakasnjele.length === 0) return;
+
+        const stavke = zakasnjele.map((p) => {
+            const rok = new Date(p.rok_vracanja);
+            rok.setHours(0, 0, 0, 0);
+            const dana = Math.round((danas - rok) / 86400000);
+            return `<li><strong>${pobjegniHTML(p.naziv)}</strong> — kasni ${dana} ${dana === 1 ? 'dan' : 'dana'} (rok je bio ${formatirajDatum(p.rok_vracanja)})</li>`;
+        }).join('');
+
+        await new Promise((r) => setTimeout(r, 700)); // mala odgoda prije nego modal "uskoči"
+        await prikaziModal({
+            naslov: '⏰ Imate igre za vraćanje',
+            sadrzajHTML: `<p>Sljedeće ste igre trebali već vratiti. Molimo donesite ih u igraonicu što prije:</p>
+                          <ul class="modal-popis">${stavke}</ul>`,
+            tekstGumba: 'U redu, vratit ću'
+        });
+    } catch (greska) { /* nije kljucno */ }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await korisnikUcitan; // ceka provjeru sesije i ucitavanje omiljenih
     prilagodiHero();
     postaviStepper();
+    najaviZakasnjenje(); // upozorenje o kašnjenju nakon preusmjeravanja s prijave
 
     try {
         const igre = await apiZahtjev('/api/igre');

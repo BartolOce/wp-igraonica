@@ -15,14 +15,20 @@ function posudioIkad() {
     return mojePosudbeOveIgre.some((p) => p.status === 'preuzeto' || p.status === 'vraceno');
 }
 
-// Niz "slika" za galeriju: prava slika (ako postoji) + tematske ilustracije
+// Niz "slika" za galeriju. Ako igra ima pravu sliku, prvi slajd je ta slika
+// s tematskom ilustracijom u podlozi - ako se slika ne učita (onerror), ostaje
+// ilustracija pa galerija nikad ne prikazuje "slomljenu" sliku.
 function slajdoviIgre(igra) {
     const slajdovi = [];
     if (igra.slika_url) {
-        slajdovi.push(`<img class="galerija-img" src="${pobjegniHTML(igra.slika_url)}"
-            alt="Slika igre ${pobjegniHTML(igra.naziv)}">`);
+        slajdovi.push(`<div class="galerija-slika-omot">
+            ${ilustracijaKategorije(igra.kategorija)}
+            <img class="galerija-img" src="${pobjegniHTML(igra.slika_url)}"
+                 alt="Slika igre ${pobjegniHTML(igra.naziv)}" onerror="this.style.display='none'">
+        </div>`);
+    } else {
+        slajdovi.push(ilustracijaKategorije(igra.kategorija));
     }
-    slajdovi.push(ilustracijaKategorije(igra.kategorija));
     slajdovi.push(ilustracijaKockice(igra.kategorija));
     return slajdovi;
 }

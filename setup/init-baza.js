@@ -5,6 +5,8 @@
 
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const config = require('../config');
 
 async function glavna() {
@@ -117,15 +119,18 @@ async function glavna() {
     console.log('Tablice stvorene: korisnici, igre, posudbe, recenzije, omiljene.');
 
     // 6) Pocetni korisnici (lozinke se spremaju kao bcrypt hash)
+    //    1 administrator + 3 clana; svi clanovi dijele lozinku 'lozinka123' (radi lakseg testiranja)
     const adminLozinka = await bcrypt.hash('admin123', 10);
-    const demoLozinka = await bcrypt.hash('lozinka123', 10);
+    const clanLozinka = await bcrypt.hash('lozinka123', 10);
     await veza.query(
         `INSERT INTO korisnici (ime, prezime, email, lozinka, uloga) VALUES
          ('Admin', 'Voditelj', 'admin@igraonica.hr', ?, 'admin'),
-         ('Ana', 'Anić', 'ana.anic@gmail.com', ?, 'korisnik')`,
-        [adminLozinka, demoLozinka]
+         ('Ana', 'Anić', 'ana.anic@gmail.com', ?, 'korisnik'),
+         ('Marko', 'Marić', 'marko.maric@gmail.com', ?, 'korisnik'),
+         ('Ivana', 'Kovač', 'ivana.kovac@gmail.com', ?, 'korisnik')`,
+        [adminLozinka, clanLozinka, clanLozinka, clanLozinka]
     );
-    console.log('Korisnici ubaceni (admin@igraonica.hr / admin123, ana.anic@gmail.com / lozinka123).');
+    console.log('Korisnici ubaceni: 1 administrator + 3 clana.');
 
     // 7) Pocetne drustvene igre
     // [naziv, izdavac, kategorija, godina, min_igraca, max_igraca, trajanje(min), tezina, opis, broj_primjeraka, slika_url]
@@ -211,36 +216,72 @@ async function glavna() {
     );
     console.log(`Ubaceno ${igre.length} igara.`);
 
-    // 8) Pocetne posudbe (razlicita stanja radi prikaza tijeka)
+    // 8) Pocetne posudbe - osmisljene da pokazu SVE situacije za demonstraciju:
+    //    PREUZETO:    Ana/Catan (rok pred istek), Marko/Gloomhaven (KASNI; 1 primj. -> NEDOSTUPNO), Ivana/Pandemic
+    //    REZERVIRANO: Ana/Pandemic (popunjava Pandemic -> NEDOSTUPNO), Marko/Codenames, Ivana/Azul  (cekaju admin potvrdu)
+    //    VRACENO:     povijest posudbi (ujedno uvjet za pisanje recenzija)
+    //    OTKAZANO:    Ana/Munchkin, Marko/Monopoly
     // (korisnik_id, igra_id, status, datum_rezervacije, datum_preuzimanja, rok_vracanja, datum_vracanja)
     await veza.query(`
         INSERT INTO posudbe (korisnik_id, igra_id, status, datum_rezervacije, datum_preuzimanja, rok_vracanja, datum_vracanja) VALUES
-        (2, 1, 'preuzeto',    DATE_SUB(NOW(), INTERVAL 13 DAY), DATE_SUB(NOW(), INTERVAL 13 DAY), DATE_ADD(CURDATE(), INTERVAL 1 DAY),  NULL),
-        (2, 3, 'vraceno',     DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_SUB(NOW(), INTERVAL 28 DAY), DATE_SUB(CURDATE(), INTERVAL 14 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY)),
-        (2, 7, 'rezervirano', DATE_SUB(NOW(), INTERVAL 4 DAY),  NULL,                             NULL,                                 NULL),
-        (1, 5, 'vraceno',     DATE_SUB(NOW(), INTERVAL 40 DAY), DATE_SUB(NOW(), INTERVAL 38 DAY), DATE_SUB(CURDATE(), INTERVAL 24 DAY), DATE_SUB(NOW(), INTERVAL 30 DAY)),
-        (1, 1, 'vraceno',     DATE_SUB(NOW(), INTERVAL 50 DAY), DATE_SUB(NOW(), INTERVAL 48 DAY), DATE_SUB(CURDATE(), INTERVAL 34 DAY), DATE_SUB(NOW(), INTERVAL 40 DAY))
+        (2, 1,  'preuzeto',    DATE_SUB(NOW(), INTERVAL 14 DAY), DATE_SUB(NOW(), INTERVAL 12 DAY), DATE_ADD(CURDATE(), INTERVAL 2 DAY),  NULL),
+        (3, 14, 'preuzeto',    DATE_SUB(NOW(), INTERVAL 25 DAY), DATE_SUB(NOW(), INTERVAL 23 DAY), DATE_SUB(CURDATE(), INTERVAL 3 DAY),  NULL),
+        (4, 5,  'preuzeto',    DATE_SUB(NOW(), INTERVAL 7 DAY),  DATE_SUB(NOW(), INTERVAL 5 DAY),  DATE_ADD(CURDATE(), INTERVAL 9 DAY),  NULL),
+        (2, 5,  'rezervirano', DATE_SUB(NOW(), INTERVAL 2 DAY),  NULL, NULL, NULL),
+        (3, 7,  'rezervirano', DATE_SUB(NOW(), INTERVAL 1 DAY),  NULL, NULL, NULL),
+        (4, 8,  'rezervirano', DATE_SUB(NOW(), INTERVAL 3 DAY),  NULL, NULL, NULL),
+        (2, 3,  'vraceno',     DATE_SUB(NOW(), INTERVAL 40 DAY), DATE_SUB(NOW(), INTERVAL 38 DAY), DATE_SUB(CURDATE(), INTERVAL 24 DAY), DATE_SUB(NOW(), INTERVAL 26 DAY)),
+        (2, 4,  'vraceno',     DATE_SUB(NOW(), INTERVAL 50 DAY), DATE_SUB(NOW(), INTERVAL 48 DAY), DATE_SUB(CURDATE(), INTERVAL 34 DAY), DATE_SUB(NOW(), INTERVAL 40 DAY)),
+        (3, 1,  'vraceno',     DATE_SUB(NOW(), INTERVAL 35 DAY), DATE_SUB(NOW(), INTERVAL 33 DAY), DATE_SUB(CURDATE(), INTERVAL 19 DAY), DATE_SUB(NOW(), INTERVAL 25 DAY)),
+        (3, 6,  'vraceno',     DATE_SUB(NOW(), INTERVAL 22 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(CURDATE(), INTERVAL 6 DAY),  DATE_SUB(NOW(), INTERVAL 12 DAY)),
+        (4, 3,  'vraceno',     DATE_SUB(NOW(), INTERVAL 28 DAY), DATE_SUB(NOW(), INTERVAL 26 DAY), DATE_SUB(CURDATE(), INTERVAL 12 DAY), DATE_SUB(NOW(), INTERVAL 18 DAY)),
+        (4, 1,  'vraceno',     DATE_SUB(NOW(), INTERVAL 33 DAY), DATE_SUB(NOW(), INTERVAL 31 DAY), DATE_SUB(CURDATE(), INTERVAL 17 DAY), DATE_SUB(NOW(), INTERVAL 23 DAY)),
+        (4, 9,  'vraceno',     DATE_SUB(NOW(), INTERVAL 19 DAY), DATE_SUB(NOW(), INTERVAL 17 DAY), DATE_SUB(CURDATE(), INTERVAL 3 DAY),  DATE_SUB(NOW(), INTERVAL 9 DAY)),
+        (2, 10, 'otkazano',    DATE_SUB(NOW(), INTERVAL 6 DAY),  NULL, NULL, NULL),
+        (3, 35, 'otkazano',    DATE_SUB(NOW(), INTERVAL 8 DAY),  NULL, NULL, NULL)
     `);
 
-    // 9) Pocetne recenzije (samo za igre koje je korisnik stvarno preuzeo/vratio)
+    // 9) Pocetne recenzije - svaka odgovara posudbi koju je taj clan stvarno preuzeo/vratio.
+    //    Catan ima 3 recenzije (lijepo se vidi prosjecna ocjena), Dixit 2.
     await veza.query(`
         INSERT INTO recenzije (korisnik_id, igra_id, ocjena, komentar, datum) VALUES
-        (2, 3, 5, 'Najdraža igra za društvo! Uvijek izazove smijeh, a prekrasne ilustracije su posebna priča. Toplo preporučujem za opuštene večeri.', DATE_SUB(NOW(), INTERVAL 19 DAY)),
-        (2, 1, 4, 'Odličan klasik, trgovanje s igračima je najzabavniji dio. Skidam pola zvjezdice jer zna ovisiti o sreći s kockicom, ali svejedno vrh.', DATE_SUB(NOW(), INTERVAL 4 DAY)),
-        (1, 1, 5, 'Igra koja je pokrenula čitav hobi. Savršen balans sreće i strategije. Klasik koji mora imati svaka kolekcija.', DATE_SUB(NOW(), INTERVAL 12 DAY)),
-        (1, 5, 5, 'Najbolja kooperativna igra za upoznavanje s hobijem. Napetost do zadnjeg poteza i osjećaj zajedničke pobjede su neusporedivi.', DATE_SUB(NOW(), INTERVAL 6 DAY))
+        (2, 1, 4, 'Odličan klasik, trgovanje s igračima je najzabavniji dio. Zna ovisiti o sreći s kockicom, ali svejedno vrh.', DATE_SUB(NOW(), INTERVAL 3 DAY)),
+        (3, 1, 5, 'Igra koja me uvela u cijeli hobi. Savršen spoj sreće i strategije — mora se imati u kolekciji.', DATE_SUB(NOW(), INTERVAL 22 DAY)),
+        (4, 1, 5, 'Uvijek prođe sjajno u društvu. Svaka je partija drukčija zbog promjenjivog rasporeda ploče.', DATE_SUB(NOW(), INTERVAL 20 DAY)),
+        (2, 3, 5, 'Najdraža igra za opuštene večeri. Prekrasne ilustracije i zajamčen smijeh za stolom.', DATE_SUB(NOW(), INTERVAL 24 DAY)),
+        (4, 3, 4, 'Maštovita i drukčija od svega. Malo ovisi o društvu, ali tada je nezaboravna.', DATE_SUB(NOW(), INTERVAL 15 DAY)),
+        (2, 4, 4, 'Lako se objasni, a napeto je do zadnjeg vagona. Idealna za obiteljske partije.', DATE_SUB(NOW(), INTERVAL 38 DAY)),
+        (3, 6, 4, 'Sjajna kad je više igrača jer nema čekanja na potez. Treba par partija da se uđe u štos.', DATE_SUB(NOW(), INTERVAL 10 DAY)),
+        (4, 9, 5, 'Prelijepa i opuštajuća, a ima dovoljno dubine. Najljepša igra koju imam.', DATE_SUB(NOW(), INTERVAL 7 DAY)),
+        (4, 5, 5, 'Najbolji osjećaj zajedničke pobjede — napeto do samog kraja. Toplo preporučujem!', DATE_SUB(NOW(), INTERVAL 2 DAY))
     `);
 
-    // 10) Pocetne omiljene igre (wishlist korisnice Ane)
+    // 10) Pocetne omiljene igre (wishlist) - svaki clan ima nekoliko oznacenih
     await veza.query(`
         INSERT INTO omiljene (korisnik_id, igra_id) VALUES
-        (2, 9), (2, 8), (2, 6)
+        (2, 9), (2, 8), (2, 6),
+        (3, 14), (3, 11), (3, 31),
+        (4, 3), (4, 27), (4, 28)
     `);
     console.log('Pocetne posudbe, recenzije i omiljene ubacene.');
+
+    // 11) Placeholder mape za slike svake igre: public/slike/<id>/
+    //     (u njih se kasnije stavljaju prave slike; .gitkeep cuva praznu mapu u gitu)
+    const [sveIgreId] = await veza.query('SELECT id FROM igre ORDER BY id');
+    const mapaSlika = path.join(__dirname, '..', 'public', 'slike');
+    fs.mkdirSync(mapaSlika, { recursive: true });
+    for (const { id } of sveIgreId) {
+        const mapaIgre = path.join(mapaSlika, String(id));
+        fs.mkdirSync(mapaIgre, { recursive: true });
+        fs.writeFileSync(path.join(mapaIgre, '.gitkeep'), '');
+    }
+    console.log(`Stvorene placeholder mape za slike (public/slike/1..${sveIgreId.length}/).`);
 
     await veza.end();
     console.log('');
     console.log('=== Baza podataka uspjesno inicijalizirana! ===');
+    console.log('Prijava ADMIN:   admin@igraonica.hr / admin123');
+    console.log('Prijava CLANOVI: ana.anic@gmail.com, marko.maric@gmail.com, ivana.kovac@gmail.com  (lozinka: lozinka123)');
     console.log('Aplikaciju pokrenite naredbom: npm start');
 }
 

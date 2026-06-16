@@ -78,23 +78,49 @@ async function ucitajPosudbe() {
                     <td><a href="igra.html?id=${p.igra_id}">${pobjegniHTML(p.naziv)}</a></td>
                     <td>${celijaClana(p)}</td>
                     <td>${formatirajDatum(p.datum_rezervacije)}${oznaka}</td>
-                    <td><button class="gumb gumb-mali" data-preuzmi="${p.id}">Označi preuzeto</button></td>
+                    <td>
+                        <button class="gumb gumb-mali" data-preuzmi="${p.id}">Označi preuzeto</button>
+                        <button class="gumb gumb-mali gumb-opasno" data-otkazi="${p.id}">Otkaži</button>
+                    </td>
                 </tr>`;
             }).join('');
             postaviAkciju(rezTijelo, 'preuzmi');
+
+            // gumb "Otkaži" - admin otkazuje (briše) tuđu rezervaciju
+            rezTijelo.querySelectorAll('[data-otkazi]').forEach((gumb) => {
+                gumb.addEventListener('click', async () => {
+                    if (!confirm('Otkazati ovu rezervaciju člana?')) return;
+                    gumb.disabled = true;
+                    try {
+                        const odgovor = await apiZahtjev(`/api/posudbe/${gumb.dataset.otkazi}/admin-otkazi`, { method: 'PUT' });
+                        prikaziToast(odgovor.poruka, 'uspjeh');
+                        await Promise.all([ucitajPosudbe(), ucitajPlocu()]);
+                    } catch (greska) {
+                        prikaziToast(greska.message, 'greska');
+                        gumb.disabled = false;
+                    }
+                });
+            });
         }
 
         // preuzete -> gumb "Označi vraćeno"
         if (preuzete.length === 0) {
             preTijelo.innerHTML = '<tr><td colspan="4" class="tablica-prazno">Nema posuđenih igara.</td></tr>';
         } else {
-            preTijelo.innerHTML = preuzete.map((p) => `
-                <tr>
+            preTijelo.innerHTML = preuzete.map((p) => {
+                const danaKasni = danaOd(p.rok_vracanja); // > 0 ako je rok već prošao
+                const kasni = danaKasni > 0;
+                const rokPrikaz = kasni
+                    ? `${formatirajDatum(p.rok_vracanja)} <span class="znacka znacka-nedostupno">Kasni ${danaKasni} d.</span>`
+                    : formatirajDatum(p.rok_vracanja);
+                return `
+                <tr class="${kasni ? 'redak-istaknut' : ''}">
                     <td><a href="igra.html?id=${p.igra_id}">${pobjegniHTML(p.naziv)}</a></td>
                     <td>${celijaClana(p)}</td>
-                    <td>${formatirajDatum(p.rok_vracanja)}</td>
+                    <td>${rokPrikaz}</td>
                     <td><button class="gumb gumb-mali gumb-sekundarni" data-vrati="${p.id}">Označi vraćeno</button></td>
-                </tr>`).join('');
+                </tr>`;
+            }).join('');
             postaviAkciju(preTijelo, 'vrati');
         }
     } catch (greska) {

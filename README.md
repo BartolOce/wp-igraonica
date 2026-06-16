@@ -34,12 +34,39 @@ Potrebno: **Node.js** (v18+) i **XAMPP** (MySQL).
    ```
 5. Otvoriti u pregledniku: **http://localhost:3000**
 
-## Probni korisnički računi
+## Početna konfiguracija baze
 
-| Uloga | E-mail | Lozinka |
-|---|---|---|
-| Administrator | `admin@igraonica.hr` | `admin123` |
-| Korisnik | `ana.anic@gmail.com` | `lozinka123` |
+Baza se postavlja skriptom `npm run init-baza` (ili dvoklikom na `postavi-bazu.bat`). Skripta
+**briše postojeću bazu i gradi je iznova** sa svih 5 tablica i početnim podacima — uvijek čisto, ponovljivo stanje.
+
+Postavke veze nalaze se u `config.js` (zadane XAMPP postavke, po potrebi izmijeniti):
+
+| Postavka | Vrijednost |
+|---|---|
+| host | `localhost` |
+| port | `3306` |
+| korisnik | `root` |
+| lozinka | *(prazno)* |
+| baza | `igraonica` |
+| kodiranje | `utf8mb4` (collation `utf8mb4_croatian_ci`) |
+
+Početni podaci osmišljeni su tako da se **odmah mogu prikazati sve funkcionalnosti**:
+
+- **36 društvenih igara** u katalogu
+- **4 korisnika** (1 administrator + 3 člana)
+- **15 posudbi** u svim stanjima (rezervirano, preuzeto, vraćeno, otkazano) — uključujući jednu **zakašnjelu** posudbu i dvije **potpuno zauzete (nedostupne)** igre
+- **9 recenzija** (Catan ima 3, Dixit 2) te nekoliko **omiljenih** igara po članu
+
+### Probni korisnički računi
+
+| Uloga | E-mail | Lozinka | Što ima pripremljeno za demonstraciju |
+|---|---|---|---|
+| **Administrator** | `admin@igraonica.hr` | `admin123` | nadzorna ploča, upravljanje posudbama i katalogom |
+| Član | `ana.anic@gmail.com` | `lozinka123` | aktivna posudba (rok pred istek), rezervacija, recenzije, omiljene |
+| Član | `marko.maric@gmail.com` | `lozinka123` | **zakašnjela** posudba (Gloomhaven) → upozorenje pri prijavi + blokada nove rezervacije |
+| Član | `ivana.kovac@gmail.com` | `lozinka123` | preuzeta igra, rezervacija, recenzije, omiljene |
+
+> **Administrator se ne može registrirati** kroz aplikaciju (registracija uvijek stvara običnog člana) — za administraciju koristi gornji račun. Sva tri člana dijele lozinku `lozinka123`.
 
 ## Struktura baze podataka
 
@@ -160,6 +187,7 @@ Rezervirani i preuzeti primjerci smatraju se zauzetima pri izračunu dostupnosti
 | `GET /api/posudbe` | sve posudbe (upravljanje) | admin |
 | `PUT /api/posudbe/:id/preuzmi` | potvrda preuzimanja | admin |
 | `PUT /api/posudbe/:id/vrati` | potvrda povrata | admin |
+| `PUT /api/posudbe/:id/admin-otkazi` | otkazivanje tuđe rezervacije | admin |
 | `GET /api/recenzije/igra/:id` | recenzije igre | svi |
 | `POST /api/recenzije` | nova recenzija (samo nakon posudbe) | prijavljeni |
 | `DELETE /api/recenzije/:id` | brisanje recenzije | autor / admin |
@@ -197,6 +225,7 @@ Web_projekt/
 └── public/                # front-end
     ├── *.html             # 9 stranica (uklj. admin.html i admin-katalog.html)
     ├── css/stil.css       # vlastiti responzivni CSS (vintage/retro tema)
+    ├── slike/<id>/        # slike igara po mapi (ako nema slike, prikazuje se ilustracija)
     └── js/                # klijentske skripte (AJAX, validacija, prikaz)
         └── ilustracije.js # generator SVG ilustracija "kutija" po kategoriji
 ```
